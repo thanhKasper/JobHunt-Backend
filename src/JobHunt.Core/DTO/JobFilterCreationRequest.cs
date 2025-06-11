@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JobHunt.Core.DTO;
 
-public class JobFilterDTO : IValidatableObject
+public class JobFilterCreationRequest : IValidatableObject
 {
     public string? FilterTitle { get; set; }
     [Required(ErrorMessage = "{0} cannot be empty")]
