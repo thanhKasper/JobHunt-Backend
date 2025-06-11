@@ -1,10 +1,12 @@
+using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
 
 namespace JobHunt.Core.Services;
 
-public class JobFilterService : IJobFilterService
+public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterService
 {
+    private readonly IJobFilterRepository _jobFilterRepo = jobFilterRepo;
     public Task<JobFilterResponseSimple> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest)
     {
         throw new NotImplementedException();
