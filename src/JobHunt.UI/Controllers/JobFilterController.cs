@@ -1,3 +1,4 @@
+using JobHunt.Core.DTO;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobHunt.UI.Controllers;
@@ -23,9 +24,9 @@ public class JobFilterController : ApiControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateNewJobFilter()
+    public async Task<ActionResult<JobFilterDTO>> CreateNewJobFilter([FromBody] JobFilterDTO jobFilter)
     {
-        return Ok("Receive request from POST api/jobfilter");
+        return jobFilter;
     }
 
     [HttpDelete]

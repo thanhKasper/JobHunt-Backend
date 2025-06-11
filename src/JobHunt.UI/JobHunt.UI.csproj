@@ -6,4 +6,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../JobHunt.Core/JobHunt.Core.csproj" />
+  </ItemGroup>
+
 </Project>
