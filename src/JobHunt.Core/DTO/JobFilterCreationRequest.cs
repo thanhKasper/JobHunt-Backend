@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using JobHunt.Core.Utils;
 
 namespace JobHunt.Core.DTO;
 
 public class JobFilterDTO : IValidatableObject
 {
+    public string? FilterTitle { get; set; }
     [Required(ErrorMessage = "{0} cannot be empty")]
     public string? Occupation { get; set; }
     [RegularExpression("^(intern|fresher|junior|staff|senior|lead|manager|director)$",
