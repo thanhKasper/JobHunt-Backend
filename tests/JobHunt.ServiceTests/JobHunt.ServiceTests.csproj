@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoFixture" Version="4.18.1" />
     <PackageReference Include="coverlet.collector" Version="6.0.2" />
     <PackageReference Include="EntityFrameworkCoreMock.Moq" Version="2.4.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
@@ -18,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="../../src/JobHunt.Core/JobHunt.Core.csproj" />
+    <ProjectReference Include="../../src/JobHunt.Infrastructure/JobHunt.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
