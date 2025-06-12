@@ -9,7 +9,7 @@ public interface IJobFilterService
     /// </summary>
     /// <param name="jobFilterRequest">List of fields related to the job for filtering</param>
     /// <returns>A simple JobFilter</returns>
-    public Task<JobFilterResponseDetail> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest);
+    public Task<JobFilterResponseDetail?> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest);
 
 
     /// <summary>
@@ -24,7 +24,7 @@ public interface IJobFilterService
     /// </summary>
     /// <param name="jobFilterId">The id of the job filter that user want to search for</param>
     /// <returns>A detail information of a job filter</returns>
-    public Task<JobFilterResponseDetail> GetJobFilterDetail(Guid jobFilterId);
+    public Task<JobFilterResponseDetail?> GetJobFilterDetail(Guid? jobFilterId);
 
 
     /// <summary>
@@ -32,5 +32,5 @@ public interface IJobFilterService
     /// </summary>
     /// <param name="jobFilterId">The id of the job filter that user want to remove</param>
     /// <returns>A removed job filter information</returns>
-    public Task<JobFilterResponseSimple> DeleteJobFilter(Guid jobFilterId);
+    public Task<JobFilterResponseSimple?> DeleteJobFilter(Guid? jobFilterId);
 }

@@ -5,9 +5,9 @@ namespace JobHunt.Infrastructure.DatabaseContext;
 
 public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
-    public DbSet<JobFilter> JobFilters { get; set; }
+    public virtual DbSet<JobFilter> JobFilters { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {   
+    {
     }
 }
