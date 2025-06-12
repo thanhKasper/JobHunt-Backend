@@ -6,4 +6,6 @@ public interface IJobFilterRepository
 {
     public Task<JobFilter[]> GetAllJobFilters();
     public Task<JobFilter> FindOneJobFilterById(Guid id);
+    public Task<JobFilter> SaveJobFilter(JobFilter jobFilter);
+    public Task<JobFilter> RemoveJobFilter(JobFilter jobFilter);
 }

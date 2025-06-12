@@ -1,4 +1,4 @@
-namespace JobHunt.Core.Utils;
+namespace JobHunt.Core.Domain.ValueObjects;
 
 public enum JobLevel
 {
@@ -6,7 +6,7 @@ public enum JobLevel
     Fresher,
     Junior,
     Senior,
-    Lead,
+    TeamLead,
     Manager,
     Director
 }

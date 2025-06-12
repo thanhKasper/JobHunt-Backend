@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using JobHunt.Core.Domain.ValueObjects;
 
 namespace JobHunt.Core.Domain.Entities;
 
@@ -9,8 +10,8 @@ public class JobFilter
     [Required]
     public string? FilterTitle { get; set; }
     [Required]
-    public string? Occupation { get; set; }
-    public string? JobLevel { get; set; }
+    public JobField? Occupation { get; set; }
+    public JobLevel? Level { get; set; }
     public int? YearsOfExperience { get; set; }
     public List<string>? TechnicalKnowledge { get; set; }
     public List<string>? SoftSkills { get; set; }
