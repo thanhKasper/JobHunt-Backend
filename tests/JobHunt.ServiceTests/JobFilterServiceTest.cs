@@ -1,13 +1,21 @@
 ﻿using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
 using JobHunt.Core.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace JobHunt.ServiceTests;
 
 public class JobFilterServiceTest
 {
-    private readonly IJobFilterService _jobfilterService = new JobFilterService();
+    private readonly IJobFilterService _jobfilterService;
 
+    public JobFilterServiceTest()
+    {
+        DbContext mockDbContext = new 
+        _jobfilterService = new JobFilterService();
+    }
+    
+    #region CreateNewJobFilter
     [Fact]
     public async Task CreateNewJobFilter_EmptyArgument()
     {
@@ -118,10 +126,9 @@ public class JobFilterServiceTest
             Tools = ["HTML", "CSS", "Javascript", "Typescript"]
         };
 
-        JobFilterResponseSimple res = await _jobfilterService.CreateNewJobFilter(req);
-        JobFilterResponseDetail jobFilterDetail = await _jobfilterService.GetJobFilterDetail(res.Id);
+        JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilter(req);
 
-        Assert.NotNull(jobFilterDetail.Level);
+        Assert.NotNull(res.Level);
     }
 
     [Fact]
@@ -139,10 +146,9 @@ public class JobFilterServiceTest
             Tools = ["HTML", "CSS", "Javascript", "Typescript"]
         };
 
-        JobFilterResponseSimple res = await _jobfilterService.CreateNewJobFilter(req);
-        JobFilterResponseDetail jobFilterDetail = await _jobfilterService.GetJobFilterDetail(res.Id);
+        JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilter(req);
 
-        Assert.NotNull(jobFilterDetail.Level);
+        Assert.NotNull(res.YearsOfExperience);
     }
 
     [Fact]
@@ -160,10 +166,9 @@ public class JobFilterServiceTest
             Tools = ["HTML", "CSS", "Javascript", "Typescript"]
         };
 
-        JobFilterResponseSimple res = await _jobfilterService.CreateNewJobFilter(req);
-        JobFilterResponseDetail jobFilterDetail = await _jobfilterService.GetJobFilterDetail(res.Id);
+        JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilter(req);
 
-        Assert.NotEqual(req.SoftSkills.Count, jobFilterDetail.SoftSkills!.Count);
+        Assert.NotEqual(req.SoftSkills.Count, res.SoftSkills!.Count);
     }
 
     [Fact]
@@ -181,10 +186,9 @@ public class JobFilterServiceTest
             Tools = ["HTML", "CSS", "Javascript", "Typescript", "Entity Framework", "entity framework"]
         };
 
-        JobFilterResponseSimple res = await _jobfilterService.CreateNewJobFilter(req);
-        JobFilterResponseDetail jobFilterDetail = await _jobfilterService.GetJobFilterDetail(res.Id);
+        JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilter(req);
 
-        Assert.NotEqual(req.Tools.Count, jobFilterDetail.Tools!.Count);
+        Assert.NotEqual(req.Tools.Count, res.Tools!.Count);
     }
 
     [Fact]
@@ -202,10 +206,9 @@ public class JobFilterServiceTest
             Tools = ["HTML", "CSS", "Javascript", "Typescript"]
         };
 
-        JobFilterResponseSimple res = await _jobfilterService.CreateNewJobFilter(req);
-        JobFilterResponseDetail jobFilterDetail = await _jobfilterService.GetJobFilterDetail(res.Id);
+        JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilter(req);
 
-        Assert.NotEqual(req.Languages.Count, jobFilterDetail.Languages!.Count);
+        Assert.NotEqual(req.Languages.Count, res.Languages!.Count);
     }
 
     [Fact]
@@ -223,10 +226,9 @@ public class JobFilterServiceTest
             Tools = ["HTML", "CSS", "Javascript", "Typescript"]
         };
 
-        JobFilterResponseSimple res = await _jobfilterService.CreateNewJobFilter(req);
-        JobFilterResponseDetail jobFilterDetail = await _jobfilterService.GetJobFilterDetail(res.Id);
+        JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilter(req);
 
-        Assert.NotEqual(req.TechnicalKnowledge.Count, jobFilterDetail.TechnicalKnowledge!.Count);
+        Assert.NotEqual(req.TechnicalKnowledge.Count, res.TechnicalKnowledge!.Count);
     }
 
     [Fact]
@@ -315,8 +317,25 @@ public class JobFilterServiceTest
             await _jobfilterService.CreateNewJobFilter(req);
         });
     }
+    #endregion
+
+    #region GetAllJobFilterSimple
+    [Fact]
+    public async Task GetAllJobFilterSimple_EmptyList()
+    {
+        List<JobFilterResponseSimple> actualList = await _jobfilterService.GetAllJobFilterSimple();
+
+        Assert.Empty(actualList);
+    }
 
     [Fact]
+    public async Task GetAllJobFilterSimple_GetFewJobFilters()
+    {
+
+    }
+    #endregion
+
+    #region DeleteJobFilter
     public async Task DeleteJobFilter_NonExistingJobFilterId()
     {
         Guid nonExistGuid = Guid.Parse("c02a25c6-ae15-441b-8a85-5d7360a49c15");
@@ -325,4 +344,5 @@ public class JobFilterServiceTest
             await _jobfilterService.DeleteJobFilter(nonExistGuid);
         });
     }
+    #endregion
 }
