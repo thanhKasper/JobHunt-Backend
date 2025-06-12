@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using JobHunt.Core.Domain.ValueObjects;
 
 namespace JobHunt.Core.CustomValidationAttributes;
-
 public class JobLevelValidationAttribute : ValidationAttribute
 {
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
@@ -14,10 +13,13 @@ public class JobLevelValidationAttribute : ValidationAttribute
             {
                 return new ValidationResult(ErrorMessage ?? $"Fail to convert \"{(string)value}\" to valid value");
             }
-
-            return ValidationResult.Success;
+            else
+            {
+                return ValidationResult.Success;
+            }
         }
 
-        return null;
+        return ValidationResult.Success;
+
     }
 }

@@ -1,5 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+using System.Security;
+using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
+using JobHunt.Core.Helpers;
 using JobHunt.Core.ServiceContracts;
 
 namespace JobHunt.Core.Services;
@@ -7,9 +11,39 @@ namespace JobHunt.Core.Services;
 public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterService
 {
     private readonly IJobFilterRepository _jobFilterRepo = jobFilterRepo;
-    public Task<JobFilterResponseDetail?> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest)
+    public async Task<JobFilterResponseDetail?> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest)
     {
-        throw new NotImplementedException();
+        // Handle when jobFilterRequest is null
+        ArgumentNullException.ThrowIfNull(jobFilterRequest);
+
+        // Handle all Argument Exception cases
+        ValidationContext validationCtx = new(jobFilterRequest);
+        List<ValidationResult> errorList = [];
+        bool isValid = Validator.TryValidateObject(jobFilterRequest, validationCtx, errorList);
+        if (!isValid)
+        {
+            throw new ArgumentException(errorList.FirstOrDefault()?.ErrorMessage);
+        }
+
+        // Check if type mismatch between JobLevel and Years of Experience
+
+
+        // Remove duplication
+        jobFilterRequest.Tools = Utils.RemoveKeywordDuplication(jobFilterRequest.Tools);
+        jobFilterRequest.Languages = Utils.RemoveKeywordDuplication(jobFilterRequest.Languages);
+        jobFilterRequest.SoftSkills = Utils.RemoveKeywordDuplication(jobFilterRequest.SoftSkills);
+        jobFilterRequest.TechnicalKnowledge = Utils.RemoveKeywordDuplication(jobFilterRequest.TechnicalKnowledge);
+
+
+        JobFilter jobFilter = jobFilterRequest.ToJobFilter();
+
+        // Fill empty YearsOfExperience and Level
+        if (jobFilter.YearsOfExperience == null) jobFilter.FillJobLevel();
+        else if (jobFilter.Level == null) jobFilter.FillYearExp();
+
+        JobFilter? newJobFilter = await _jobFilterRepo.AddJobFilter(jobFilter);
+        JobFilterResponseDetail? response = newJobFilter?.ToJobFilterResponseDetail();
+        return response;
     }
 
     public Task<JobFilterResponseSimple?> DeleteJobFilter(Guid? jobFilterId)

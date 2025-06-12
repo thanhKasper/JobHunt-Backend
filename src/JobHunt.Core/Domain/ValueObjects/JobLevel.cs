@@ -5,6 +5,7 @@ public enum JobLevel
     Intern,
     Fresher,
     Junior,
+    Middle,
     Senior,
     TeamLead,
     Manager,

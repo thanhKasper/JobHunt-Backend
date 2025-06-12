@@ -1,4 +1,5 @@
 using JobHunt.Core.Domain.Entities;
+using JobHunt.Core.Helpers;
 
 namespace JobHunt.Core.DTO;
 
@@ -14,6 +15,35 @@ public class JobFilterResponseDetail : JobFilterResponseSimple
     // These will be updated when Job Service is created
     // public int? TotalJobMatch { get; set; }
     // public List<JobResponse>? JobList { get; set; }
+
+    public override string ToString()
+    {
+        return @$"JobFilterResponseDetail:
+        Id: {Id}
+        Title: {Title}
+        Occupation: {Occupation}
+        Level: {Level}
+        YearsOfExperience: {YearsOfExperience}
+        TechnicalKnowledge: {Utils.ToStringArray<string>(TechnicalKnowledge)}
+        Tools: {Utils.ToStringArray<string>(Tools)}
+        SoftSkill: {Utils.ToStringArray<string>(SoftSkills)}
+        Languages: {Utils.ToStringArray<string>(Languages)}";
+    }
+
+    public override bool Equals(object? obj)
+    {
+        JobFilterResponseDetail? res = (JobFilterResponseDetail?)obj;
+        if (res != null)
+        {
+            return this.ToString() == res.ToString();
+        }
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }
 
 public static class JobFilterResponseExtension

@@ -20,4 +20,27 @@ public class JobFilter
     public DateTime? CreatedAt { get; set; }
     public DateTime? LastUpdated { get; set; }
     // public List<Job>? MatchJobList { get; set; }
+
+    public void FillYearExp()
+    {
+        YearsOfExperience = Level switch
+        {
+            JobLevel.Intern => 0,
+            JobLevel.Fresher => 0,
+            JobLevel.Junior => 3,
+            JobLevel.Middle => 5,
+            _ => 20
+        };
+    }
+
+    public void FillJobLevel()
+    {
+        Level = YearsOfExperience switch
+        {
+            < 1 => JobLevel.Fresher,
+            <= 3 => JobLevel.Junior, 
+            <= 5 => JobLevel.Middle,
+            _ => JobLevel.Senior,
+        };
+    }
 }
