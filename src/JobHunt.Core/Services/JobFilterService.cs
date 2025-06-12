@@ -7,7 +7,7 @@ namespace JobHunt.Core.Services;
 public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterService
 {
     private readonly IJobFilterRepository _jobFilterRepo = jobFilterRepo;
-    public Task<JobFilterResponseSimple> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest)
+    public Task<JobFilterResponseDetail> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest)
     {
         throw new NotImplementedException();
     }
