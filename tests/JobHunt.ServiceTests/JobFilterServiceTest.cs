@@ -1,5 +1,7 @@
-﻿using AutoFixture;
+﻿using System.Threading.Tasks;
+using AutoFixture;
 using EntityFrameworkCoreMock;
+using FluentAssertions;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
@@ -149,6 +151,7 @@ public class JobFilterServiceTest
     {
         JobFilterCreationRequest? req = _fixture
             .Build<JobFilterCreationRequest>()
+            .With(temp => temp.Occupation, "information_technology")
             .With(temp => temp.YearsOfExperience, () => null)
             .With(temp => temp.Level, "junior")
             .Create();
@@ -160,47 +163,6 @@ public class JobFilterServiceTest
 
         Assert.NotNull(res!.Level);
     }
-
-    // [Fact]
-    // public async Task CreateNewJobFilter_RemoveDuplicateKeywordsInSoftSkillsField()
-    // {
-    //     JobFilterCreationRequest req = _fixture
-    //         .Build<JobFilterCreationRequest>()
-    //         .With(temp => temp.Occupation, "information_technology")
-    //         .With(temp => temp.YearsOfExperience, () => null)
-    //         .With(temp => temp.Level, "junior")
-    //         .With(temp => temp.SoftSkills, ["a", "A", "bc", "dd"])
-    //         .Create();
-
-
-    //     JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilter(req);
-
-    //     Assert.NotEqual(req.SoftSkills!.Count, res.SoftSkills!.Count);
-    // }
-
-    // [Fact]
-    // public async Task CreateNewJobFilter_RemoveDuplicateKeywordsInToolsField()
-    // {
-    //     JobFilterCreationRequest req = _fixture
-    //         .Build<JobFilterCreationRequest>()
-    //         .With(temp => temp.Occupation, "information_technology")
-    //         .With(temp => temp.YearsOfExperience, () => null)
-    //         .With(temp => temp.Level, "junior")
-    //         .With(temp => temp.Tools, ["a", "A", "bc", "dd"])
-    //         .Create();
-
-    //     _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilter(It.IsAny<JobFilter>()))
-    //         .ReturnsAsync(new JobFilter()
-    //         {
-    //             Tools = It.
-    //          });
-    //     JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilter(req);
-
-    //     _testOutputHelper.WriteLine("Result: ");
-    //     _testOutputHelper.WriteLine(res?.ToString() ?? "Empty Result");
-
-    //     Assert.NotEqual(req.Tools!.Count, res!.Tools!.Count);
-    // }
 
     [Fact]
     public void CreateNewJobFilter_RemoveDuplicateKeywords()
@@ -214,21 +176,6 @@ public class JobFilterServiceTest
         _testOutputHelper.WriteLine("Actual: {0}", Utils.ToStringArray<string>(actual));
         Assert.Equal(expect.Count, actual.Count);
     }
-
-    // [Fact]
-    // public async Task CreateNewJobFilter_RemoveDuplicateKeywordsInTechnicalKnowledgeField()
-    // {
-    //     JobFilterCreationRequest req = _fixture
-    //         .Build<JobFilterCreationRequest>()
-    //         .With(temp => temp.YearsOfExperience, () => null)
-    //         .With(temp => temp.Level, "junior")
-    //         .With(temp => temp.TechnicalKnowledge, ["a", "A", "bc", "dd"])
-    //         .Create();
-
-    //     JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilter(req);
-
-    //     Assert.NotEqual(req.TechnicalKnowledge!.Count, res!.TechnicalKnowledge!.Count);
-    // }
 
     [Fact]
     public async Task CreateNewJobFilter_MismatchBetweenFresherAndExpYear()
@@ -318,7 +265,7 @@ public class JobFilterServiceTest
 
         List<JobFilterResponseSimple> actualList = await _jobfilterService.GetAllJobFilterSimple();
 
-        Assert.Empty(actualList);
+        actualList.Should().BeEmpty();
     }
 
     [Fact]
@@ -333,27 +280,25 @@ public class JobFilterServiceTest
         int actual = (await _jobfilterService.GetAllJobFilterSimple()).Count;
 
 
-        Assert.Equal(actual, expectResult);
+        actual.Should().Be(expectResult);
     }
     #endregion
 
     #region GetJobFilterDetail
     [Fact]
-    public void GetJobFilterDetail_EmptyArgument()
+    public async Task GetJobFilterDetail_EmptyArgument()
     {
-        Assert.Null(
-            async () => await _jobfilterService.GetJobFilterDetail(null)
-        );
+        JobFilterResponseDetail expected = await _jobfilterService.GetJobFilterDetail(null);
+        expected.Id.Should().Be(Guid.Empty);
     }
 
     [Fact]
-    public void GetJobFilterDetail_NotFoundJobFilterId()
+    public async Task GetJobFilterDetail_NotFoundJobFilterId()
     {
         _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterById(Guid.NewGuid()))
             .ReturnsAsync(() => null);
-        Assert.Null(
-            async () => await _jobfilterService.GetJobFilterDetail(null)
-        );
+        JobFilterResponseDetail expected = await _jobfilterService.GetJobFilterDetail(Guid.NewGuid());
+        expected.Id.Should().Be(Guid.Empty);
     }
 
     [Fact]
@@ -373,23 +318,23 @@ public class JobFilterServiceTest
 
     #region DeleteJobFilter
     [Fact]
-    public void DeleteJobFilter_NonExistingJobFilterId()
+    public async Task DeleteJobFilter_NonExistingJobFilterId()
     {
         _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterById(Guid.NewGuid()))
             .ReturnsAsync(() => null);
-        Assert.Null(
-            async () => await _jobfilterService.DeleteJobFilter(null)
-        );
+        JobFilterResponseSimple res = await _jobfilterService.DeleteJobFilter(Guid.NewGuid());
+        res.Id.Should().Be(Guid.Empty);
     }
 
     [Fact]
-    public void DeleteJobFilter_NonMatchJobFilterId()
+    public async Task DeleteJobFilter_NonMatchJobFilterId()
     {
         Guid randomGuid = Guid.NewGuid();
         _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterById(randomGuid))
             .ReturnsAsync(() => null);
 
-        Assert.Null(_jobfilterService.DeleteJobFilter(randomGuid));
+        var res = await _jobfilterService.DeleteJobFilter(randomGuid);
+        res.Id.Should().Be(Guid.Empty);
     }
 
     [Fact]
