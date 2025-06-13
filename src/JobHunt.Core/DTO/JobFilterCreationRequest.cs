@@ -39,33 +39,34 @@ public class JobFilterCreationRequest : IValidatableObject
             );
         }
 
-        // For some reason using [JobLevelValidation] not work but this work, so using this instead (BUT WHYYYY????)
-        if (Level != null && !Enum.TryParse<JobLevel>(Level, true, out JobLevel result))
-        {
-            yield return new ValidationResult("Format error in Level property");
-        }
+        // // For some reason using [JobLevelValidation] not work but this work, so using this instead (BUT WHYYYY????)
+        // UPDATED: I know the reason now: Validator.TryValidateObject should set ValidateAllAttributes to true
+        // if (Level != null && !Enum.TryParse<JobLevel>(Level, true, out JobLevel result))
+        // {
+        //     yield return new ValidationResult("Format error in Level property");
+        // }
 
         if (Level != null && YearsOfExperience != null)
+        {
+            if ((Level.ToUpper() == "INTERN" || Level.ToUpper() == "FRESHER") && YearsOfExperience >= 1)
             {
-                if ((Level.ToUpper() == "INTERN" || Level.ToUpper() == "FRESHER") && YearsOfExperience >= 1)
-                {
-                    yield return new ValidationResult(
-                        $"{Level} cannot have experience greater or equal to {YearsOfExperience}"
-                    );
-                }
-                else if (Level.ToUpper() == "JUNIOR" && (YearsOfExperience > 3 || YearsOfExperience < 1))
-                {
-                    yield return new ValidationResult($"Junior level should have experience between 1 and 3 inclusively");
-                }
-                else if (Level.ToUpper() == "MIDDLE" && (YearsOfExperience > 5 || YearsOfExperience <= 3))
-                {
-                    yield return new ValidationResult($"Middle level should have experience more than 3 years until 5 years");
-                }
-                else if (Level.ToUpper() != "JUNIOR" && Level.ToUpper() != "INTERN" && Level.ToUpper() != "FRESHER" && YearsOfExperience < 5)
-                {
-                    yield return new ValidationResult($"{Level} cannot have experienc less than 5 years");
-                }
+                yield return new ValidationResult(
+                    $"{Level} cannot have experience greater or equal to {YearsOfExperience}"
+                );
             }
+            else if (Level.ToUpper() == "JUNIOR" && (YearsOfExperience > 3 || YearsOfExperience < 1))
+            {
+                yield return new ValidationResult($"Junior level should have experience between 1 and 3 inclusively");
+            }
+            else if (Level.ToUpper() == "MIDDLE" && (YearsOfExperience > 5 || YearsOfExperience <= 3))
+            {
+                yield return new ValidationResult($"Middle level should have experience more than 3 years until 5 years");
+            }
+            else if (Level.ToUpper() != "JUNIOR" && Level.ToUpper() != "INTERN" && Level.ToUpper() != "FRESHER" && YearsOfExperience < 5)
+            {
+                yield return new ValidationResult($"{Level} cannot have experienc less than 5 years");
+            }
+        }
     }
 
     public JobFilter ToJobFilter()

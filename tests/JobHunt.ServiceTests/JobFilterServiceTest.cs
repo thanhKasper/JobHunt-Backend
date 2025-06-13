@@ -7,8 +7,6 @@ using JobHunt.Core.Helpers;
 using JobHunt.Core.Services;
 using JobHunt.Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Moq;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -175,9 +173,9 @@ public class JobFilterServiceTest
     //         .Create();
 
 
-    //     JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilter(req);
+    //     JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilter(req);
 
-    //     Assert.NotEqual(req.SoftSkills!.Count, res?.SoftSkills!.Count);
+    //     Assert.NotEqual(req.SoftSkills!.Count, res.SoftSkills!.Count);
     // }
 
     // [Fact]

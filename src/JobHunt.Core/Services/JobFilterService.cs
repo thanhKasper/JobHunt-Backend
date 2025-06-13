@@ -11,7 +11,7 @@ namespace JobHunt.Core.Services;
 public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterService
 {
     private readonly IJobFilterRepository _jobFilterRepo = jobFilterRepo;
-    public async Task<JobFilterResponseDetail?> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest)
+    public async Task<JobFilterResponseDetail> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest)
     {
         // Handle when jobFilterRequest is null
         ArgumentNullException.ThrowIfNull(jobFilterRequest);
@@ -19,7 +19,7 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
         // Handle all Argument Exception cases
         ValidationContext validationCtx = new(jobFilterRequest);
         List<ValidationResult> errorList = [];
-        bool isValid = Validator.TryValidateObject(jobFilterRequest, validationCtx, errorList);
+        bool isValid = Validator.TryValidateObject(jobFilterRequest, validationCtx, errorList, true);
         if (!isValid)
         {
             throw new ArgumentException(errorList.FirstOrDefault()?.ErrorMessage);
@@ -43,10 +43,13 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
 
         JobFilter? newJobFilter = await _jobFilterRepo.AddJobFilter(jobFilter);
         JobFilterResponseDetail? response = newJobFilter?.ToJobFilterResponseDetail();
-        return response;
+        return response ?? new()
+        {
+            Id = Guid.Empty
+        };
     }
 
-    public Task<JobFilterResponseSimple?> DeleteJobFilter(Guid? jobFilterId)
+    public Task<JobFilterResponseSimple> DeleteJobFilter(Guid? jobFilterId)
     {
         throw new NotImplementedException();
     }
@@ -56,7 +59,7 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
         throw new NotImplementedException();
     }
 
-    public Task<JobFilterResponseDetail?> GetJobFilterDetail(Guid? jobFilterId)
+    public Task<JobFilterResponseDetail> GetJobFilterDetail(Guid? jobFilterId)
     {
         throw new NotImplementedException();
     }
