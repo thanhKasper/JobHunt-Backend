@@ -8,6 +8,7 @@ public class JobFilter
     [Key]
     public Guid JobFilterId { get; set; }
     [Required]
+    [MaxLength(128)]
     public string? FilterTitle { get; set; }
     [Required]
     public JobField? Occupation { get; set; }

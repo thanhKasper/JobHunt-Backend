@@ -39,12 +39,6 @@ public class JobFilterCreationRequest : IValidatableObject
             );
         }
 
-        // // For some reason using [JobLevelValidation] not work but this work, so using this instead (BUT WHYYYY????)
-        // UPDATED: I know the reason now: Validator.TryValidateObject should set ValidateAllAttributes to true
-        // if (Level != null && !Enum.TryParse<JobLevel>(Level, true, out JobLevel result))
-        // {
-        //     yield return new ValidationResult("Format error in Level property");
-        // }
 
         if (Level != null && YearsOfExperience != null)
         {

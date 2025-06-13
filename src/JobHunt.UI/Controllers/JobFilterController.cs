@@ -1,21 +1,25 @@
 using JobHunt.Core.DTO;
+using JobHunt.Core.ServiceContracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobHunt.UI.Controllers;
 
-public class JobFilterController : ApiControllerBase
+public class JobFilterController(IJobFilterService jobFilterService) : ApiControllerBase
 {
-    // [HttpGet]
-    // public async Task<IActionResult> Get()
-    // {
-    //     return Ok("Receive Request from GET api/jobfilter/");
-    // }
+    private readonly IJobFilterService _jobFilterService = jobFilterService;
+    [HttpGet]
+    public async Task<ActionResult<List<JobFilterResponseSimple>>> Get()
+    {
+        List<JobFilterResponseSimple> jobFilterList = await _jobFilterService.GetAllJobFilterSimple();
+        return jobFilterList;
+    }
 
-    // [HttpGet("{jobfilter_id}")]
-    // public async Task<IActionResult> GetOneJobFilter([FromRoute(Name = "jobfilter_id")] Guid jobfilterId)
-    // {
-    //     return Ok($"Return get request from job filter id: {jobfilterId}");
-    // }
+    [HttpGet("{jobfilter_id}")]
+    public async Task<ActionResult<JobFilterResponseDetail>> GetOneJobFilter([FromRoute(Name = "jobfilter_id")] Guid jobfilterId)
+    {
+        JobFilterResponseDetail jobFilterDetail = await _jobFilterService.GetJobFilterDetail(jobfilterId);
+        return jobFilterDetail;
+    }
 
     // [HttpPut]
     // public async Task<IActionResult> UpdateJobFilter()
@@ -23,15 +27,17 @@ public class JobFilterController : ApiControllerBase
     //     return Ok("Receive request from PUT api/jobfilter");
     // }
 
-    // [HttpPost]
-    // public async Task<ActionResult<JobFilterResponseDetail>> CreateNewJobFilter([FromBody] JobFilterCreationRequest jobFilter)
-    // {
-    //     return jobFilter;
-    // }
+    [HttpPost]
+    public async Task<ActionResult<JobFilterResponseDetail>> CreateNewJobFilter([FromBody] JobFilterCreationRequest jobFilter)
+    {
+        JobFilterResponseDetail jobFilterAdded = await _jobFilterService.CreateNewJobFilter(jobFilter);
+        return jobFilterAdded;
+    }
 
-    // [HttpDelete]
-    // public async Task<IActionResult> DeleteJobFilter()
-    // {
-    //     return Ok("Receive deletel job filter request");
-    // }
+    [HttpDelete("{jobFilterId}")]
+    public async Task<ActionResult<JobFilterResponseSimple>> DeleteJobFilter([FromRoute] Guid? jobFilterId)
+    {
+        JobFilterResponseSimple jobFilterDelete = await _jobFilterService.DeleteJobFilter(jobFilterId);
+        return jobFilterDelete;
+    }
 }

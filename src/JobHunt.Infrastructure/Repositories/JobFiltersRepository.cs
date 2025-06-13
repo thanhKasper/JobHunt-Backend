@@ -1,27 +1,36 @@
+using System.Security.Principal;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
+using JobHunt.Infrastructure.DatabaseContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace JobHunt.Infrastructure.Repositories;
 
-public class JobFilterRepositories : IJobFilterRepository
+public class JobFilterRepositories(ApplicationDbContext dbContext) : IJobFilterRepository
 {
-    public Task<JobFilter?> FindOneJobFilterById(Guid id)
+    private readonly ApplicationDbContext _dbContext = dbContext;
+    public async Task<JobFilter?> FindOneJobFilterById(Guid id)
     {
-        throw new NotImplementedException();
+        return await _dbContext.JobFilters.FindAsync(id);
     }
 
-    public Task<List<JobFilter>?> GetAllJobFilters()
+    public async Task<List<JobFilter>?> GetAllJobFilters()
     {
-        throw new NotImplementedException();
+        return await _dbContext.JobFilters.Select(jobFilter => jobFilter).ToListAsync();
     }
 
-    public Task<JobFilter?> RemoveJobFilterById(Guid id)
+    public async Task<JobFilter?> RemoveJobFilterById(Guid id)
     {
-        throw new NotImplementedException();
+        JobFilter? jobFilter = await _dbContext.JobFilters.FindAsync(id);
+        if (jobFilter != null) _dbContext.JobFilters.Remove(jobFilter);
+        await _dbContext.SaveChangesAsync();
+        return jobFilter;
     }
 
-    public Task<JobFilter?> AddJobFilter(JobFilter jobFilter)
+    public async Task<JobFilter?> AddJobFilter(JobFilter jobFilter)
     {
-        throw new NotImplementedException();
+        await _dbContext.JobFilters.AddAsync(jobFilter);
+        await _dbContext.SaveChangesAsync();
+        return jobFilter;
     }
 }
