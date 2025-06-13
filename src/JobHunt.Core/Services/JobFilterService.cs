@@ -49,18 +49,31 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
         };
     }
 
-    public Task<JobFilterResponseSimple> DeleteJobFilter(Guid? jobFilterId)
+    public async Task<JobFilterResponseSimple> DeleteJobFilter(Guid? jobFilterId)
     {
-        throw new NotImplementedException();
+        // The enlightment of async/await :))
+        var getJobFilterTask = GetJobFilterDetail(jobFilterId);
+        if (jobFilterId == null) return new JobFilterResponseSimple() { Id = Guid.Empty };
+        JobFilter? deleteJobFilter = await _jobFilterRepo.RemoveJobFilterById(jobFilterId.Value);
+        if (deleteJobFilter != null) return deleteJobFilter.ToJobFilterResponseSimple();
+        return new JobFilterResponseSimple() { Id = Guid.Empty };
     }
 
-    public Task<List<JobFilterResponseSimple>> GetAllJobFilterSimple()
+    public async Task<List<JobFilterResponseSimple>> GetAllJobFilterSimple()
     {
-        throw new NotImplementedException();
+        List<JobFilter> jobFilterList = await _jobFilterRepo.GetAllJobFilters() ?? [];
+        return [.. jobFilterList.Select(ele => ele.ToJobFilterResponseSimple())];
     }
 
-    public Task<JobFilterResponseDetail> GetJobFilterDetail(Guid? jobFilterId)
+    public async Task<JobFilterResponseDetail> GetJobFilterDetail(Guid? jobFilterId)
     {
-        throw new NotImplementedException();
+        if (jobFilterId != null)
+        {
+            JobFilter? foundJobFilter = await _jobFilterRepo.FindOneJobFilterById(jobFilterId.Value);
+
+            if (foundJobFilter != null) return foundJobFilter.ToJobFilterResponseDetail();
+        }
+
+        return new JobFilterResponseDetail() { Id = Guid.Empty };
     }
 }

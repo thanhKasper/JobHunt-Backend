@@ -10,12 +10,12 @@ public class JobFilterRepositories : IJobFilterRepository
         throw new NotImplementedException();
     }
 
-    public Task<JobFilter[]?> GetAllJobFilters()
+    public Task<List<JobFilter>?> GetAllJobFilters()
     {
         throw new NotImplementedException();
     }
 
-    public Task<JobFilter?> RemoveJobFilter(JobFilter jobFilter)
+    public Task<JobFilter?> RemoveJobFilterById(Guid id)
     {
         throw new NotImplementedException();
     }
