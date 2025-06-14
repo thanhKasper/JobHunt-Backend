@@ -20,7 +20,7 @@ public class JobFilter
     public List<string>? Languages { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? LastUpdated { get; set; }
-    // public List<Job>? MatchJobList { get; set; }
+    public List<Job>? MatchJobList { get; set; }
 
     public void FillYearExp()
     {
