@@ -25,6 +25,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
         modelBuilder.Entity<JobFilter>()
             .Property(table => table.Tools)
             .HasStringArrayToStringConversion();
+        modelBuilder.Entity<Job>().Property(table => table.Requirements)
+            .HasStringArrayToStringConversion();
     }
 }
 
