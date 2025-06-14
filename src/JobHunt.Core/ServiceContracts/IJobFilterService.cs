@@ -23,7 +23,8 @@ public interface IJobFilterService
     /// Get a detail information of a job filter 
     /// </summary>
     /// <param name="jobFilterId">The id of the job filter that user want to search for</param>
-    /// <returns>A detail information of a job filter</returns>
+    /// <returns>A detail information of a job filter
+    /// Job filter with empty guid in case no job filter found.</returns>
     public Task<JobFilterResponseDetail> GetJobFilterDetail(Guid? jobFilterId);
 
 
@@ -31,6 +32,6 @@ public interface IJobFilterService
     /// Remove a job filter that is not need by user anymore.
     /// </summary>
     /// <param name="jobFilterId">The id of the job filter that user want to remove</param>
-    /// <returns>A removed job filter information</returns>
+    /// <returns>A removed job filter information, job filter with empty Guid indicating not found job filter to delete</returns>
     public Task<JobFilterResponseSimple> DeleteJobFilter(Guid? jobFilterId);
 }
