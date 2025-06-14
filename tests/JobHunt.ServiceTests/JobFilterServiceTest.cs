@@ -1,13 +1,10 @@
 ﻿using AutoFixture;
-using EntityFrameworkCoreMock;
 using FluentAssertions;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.Helpers;
 using JobHunt.Core.Services;
-using JobHunt.Infrastructure.DatabaseContext;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -26,12 +23,6 @@ public class JobFilterServiceTest
         _fixture = new Fixture();
         var initialJobFilters = new List<JobFilter>();
         _testOutputHelper = testOutputHelper;
-
-        DbContextMock<ApplicationDbContext> dbContextMock =
-            new(new DbContextOptionsBuilder<ApplicationDbContext>().Options);
-
-        ApplicationDbContext dbContext = dbContextMock.Object;
-        dbContextMock.CreateDbSetMock(temp => temp.JobFilters, initialJobFilters);
 
         _jobFilterRepositoryMock = new Mock<IJobFilterRepository>();
         IJobFilterRepository jobFilterRepo = _jobFilterRepositoryMock.Object;

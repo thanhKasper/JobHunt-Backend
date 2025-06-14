@@ -1,13 +1,10 @@
 using AutoFixture;
-using EntityFrameworkCoreMock;
 using FluentAssertions;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
 using JobHunt.Core.Services;
-using JobHunt.Infrastructure.DatabaseContext;
-using Microsoft.EntityFrameworkCore;
 using Moq;
 using Xunit.Abstractions;
 
@@ -29,15 +26,6 @@ public class JobViewServiceTest
         _fixture = new Fixture();
         _testOuputHelper = outputHelper;
 
-        // // Create mocking dbcontext
-        // DbContextMock<ApplicationDbContext> dbContextMock = new(
-        //     new DbContextOptionsBuilder().Options
-        // );
-        // // Initialize the necessary DbSet in dbcontext
-        // dbContextMock.CreateDbSetMock((dbCtx) => dbCtx.Jobs, []);
-        // dbContextMock.CreateDbSetMock(dbCtx => dbCtx.JobFilters, []);
-        // dbContextMock.CreateDbSetMock(dbCtx => dbCtx.Companies, []);
-
         _jobViewRepoMock = new Mock<IJobViewRepository>();
         _jobViewRepo = _jobViewRepoMock.Object;
         _jobViewService = new JobViewService(_jobViewRepo);
@@ -57,7 +45,20 @@ public class JobViewServiceTest
     [Fact]
     public async Task GetAllMatchingJob_GetSomeJobs_ToBeSuccess()
     {
-        List<Job> jobList = [_fixture.Create<Job>(), _fixture.Create<Job>(), _fixture.Create<Job>()];
+        List<Job> jobList = [
+            _fixture.Build<Job>()
+                .With(temp => temp.Company, null as Company)
+                .With(temp => temp.JobFilter, null as JobFilter)
+                .Create(),
+            _fixture.Build<Job>()
+                .With(temp => temp.Company, null as Company)
+                .With(temp => temp.JobFilter, null as JobFilter)
+                .Create(),
+            _fixture.Build<Job>()
+                .With(temp => temp.Company, null as Company)
+                .With(temp => temp.JobFilter, null as JobFilter)
+                .Create()
+        ];
         _jobViewRepoMock.Setup(repo => repo.GetAllJobs())
             .ReturnsAsync(jobList);
 
@@ -79,7 +80,20 @@ public class JobViewServiceTest
     [Fact]
     public async Task GetAllMatchingJobsBaseOnJobFilter_GetSomeJobs_ToBeSuccess()
     {
-        List<Job> jobList = [_fixture.Create<Job>(), _fixture.Create<Job>(), _fixture.Create<Job>()];
+        List<Job> jobList = [
+            _fixture.Build<Job>()
+                .With(temp => temp.Company, null as Company)
+                .With(temp => temp.JobFilter, null as JobFilter)
+                .Create(),
+            _fixture.Build<Job>()
+                .With(temp => temp.Company, null as Company)
+                .With(temp => temp.JobFilter, null as JobFilter)
+                .Create(),
+            _fixture.Build<Job>()
+                .With(temp => temp.Company, null as Company)
+                .With(temp => temp.JobFilter, null as JobFilter)
+                .Create()
+        ];
         _jobViewRepoMock.Setup(repo => repo.GetAllJobsBaseOnJobFilterId(It.IsAny<Guid>()))
             .ReturnsAsync(jobList);
 
