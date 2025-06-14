@@ -8,13 +8,21 @@ public class JobViewService(IJobViewRepository jobViewRepo) : IJobViewService
 {
     private readonly IJobViewRepository _jobViewRepo = jobViewRepo;
 
-    public Task<List<JobResponse>> GetAllMatchingJobs()
+    public async Task<List<JobResponse>> GetAllMatchingJobs()
     {
-        throw new NotImplementedException();
+        return (await _jobViewRepo.GetAllJobs() ?? []).ToJobResponseList();
     }
 
-    public Task<List<JobResponse>> GetAllMatchingJobsBaseOnJobFilter(Guid? jobfilterId)
+    public async Task<List<JobResponse>> GetAllMatchingJobsBaseOnJobFilter(Guid? jobfilterId)
     {
-        throw new NotImplementedException();
+        if (jobfilterId == null)
+        {
+            return [];
+        }
+        if (jobfilterId == Guid.Empty)
+        {
+            return [];
+        }
+        return (await _jobViewRepo.GetAllJobsBaseOnJobFilterId(jobfilterId.Value) ?? []).ToJobResponseList();
     }
 }
