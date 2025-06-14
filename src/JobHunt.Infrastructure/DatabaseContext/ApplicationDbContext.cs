@@ -8,6 +8,8 @@ namespace JobHunt.Infrastructure.DatabaseContext;
 public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
     public virtual DbSet<JobFilter> JobFilters { get; set; }
+    public virtual DbSet<Job> Jobs { get; set; }
+    public virtual DbSet<Company> Companies { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

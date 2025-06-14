@@ -1,5 +1,4 @@
-﻿using System.Threading.Tasks;
-using AutoFixture;
+﻿using AutoFixture;
 using EntityFrameworkCoreMock;
 using FluentAssertions;
 using JobHunt.Core.Domain.Entities;
@@ -271,8 +270,12 @@ public class JobFilterServiceTest
     [Fact]
     public async Task GetAllJobFilterSimple_GetFewJobFilters()
     {
-        JobFilter jobFilter1 = _fixture.Create<JobFilter>();
-        JobFilter jobFilter2 = _fixture.Create<JobFilter>();
+        JobFilter jobFilter1 = _fixture.Build<JobFilter>()
+            .With(temp => temp.MatchJobList, [])    
+            .Create();
+        JobFilter jobFilter2 = _fixture.Build<JobFilter>()
+            .With(temp => temp.MatchJobList, [])
+            .Create();
         _jobFilterRepositoryMock.Setup(temp => temp.GetAllJobFilters())
             .ReturnsAsync([jobFilter1, jobFilter2]);
 
@@ -308,6 +311,7 @@ public class JobFilterServiceTest
         _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterById(randomGuid))
             .ReturnsAsync(_fixture
                 .Build<JobFilter>()
+                .With(temp => temp.MatchJobList, [])
                 .With(temp => temp.JobFilterId, randomGuid)
                 .Create()
             );
@@ -344,6 +348,7 @@ public class JobFilterServiceTest
         _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterById(randomGuid))
             .ReturnsAsync(_fixture
                 .Build<JobFilter>()
+                .With(temp => temp.MatchJobList, [])
                 .With(temp => temp.JobFilterId, randomGuid)
                 .Create()
             );

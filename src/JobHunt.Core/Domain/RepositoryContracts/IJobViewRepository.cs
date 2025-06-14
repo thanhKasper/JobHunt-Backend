@@ -4,6 +4,6 @@ namespace JobHunt.Core.Domain.RepositoryContracts;
 
 public interface IJobViewRepository
 {
-    List<Job> GetAllJobs();
-    List<Job> GetAllJobsBaseOnJobFilterId(Guid jobFilterId);
+    Task<List<Job>> GetAllJobs();
+    Task<List<Job>> GetAllJobsBaseOnJobFilterId(Guid jobFilterId);
 }
