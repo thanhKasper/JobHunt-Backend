@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IJobFilterService, JobFilterService>();
 builder.Services.AddScoped<IJobFilterRepository, JobFilterRepositories>();
+builder.Services.AddScoped<IJobViewService, JobViewService>();
+builder.Services.AddScoped<IJobViewRepository, JobViewRepository>();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
