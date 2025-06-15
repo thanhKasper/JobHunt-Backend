@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace JobHunt.Core.Domain.Entities;
 
 public class Project
 {
+    [Key]
     public Guid ProjectId { get; set; }
     public string? ProjectTitle { get; set; }
     public DateTime? StartDate { get; set; }

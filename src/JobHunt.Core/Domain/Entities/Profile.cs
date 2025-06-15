@@ -23,5 +23,5 @@ public class Profile
     public List<string>? Awards { get; set; }
 
     // Navigational Properties
-    public JobHunter User { get; set; } = null!;
+    public JobHunter JobFinder { get; set; } = null!;
 }

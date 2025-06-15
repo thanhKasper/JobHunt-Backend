@@ -44,6 +44,13 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
         // Model builder for Profile entity
         modelBuilder.Entity<Profile>().Property(entity => entity.Awards)
             .HasStringArrayToStringConversion();
+
+        // Model builder for JobHunter entity
+        modelBuilder.Entity<JobHunter>()
+            .HasOne(e => e.Profile)
+            .WithOne(e => e.JobFinder)
+            .HasForeignKey<Profile>("UserId")
+            .IsRequired();
     }
 }
 
