@@ -12,6 +12,9 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     public virtual DbSet<JobFilter> JobFilters { get; set; }
     public virtual DbSet<Job> Jobs { get; set; }
     public virtual DbSet<Company> Companies { get; set; }
+    public virtual DbSet<JobHunter> JobHunters { get; set; }
+    public virtual DbSet<Profile> Profiles { get; set; }
+    public virtual DbSet<Project> Projects { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
