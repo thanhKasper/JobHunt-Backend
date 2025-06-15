@@ -1,7 +1,9 @@
 using JobHunt.Core.Domain.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace JobHunt.Infrastructure.DatabaseContext;
 
@@ -13,6 +15,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        // Model builder for JobFilter
         modelBuilder.Entity<JobFilter>()
             .Property(table => table.Languages)
             .HasStringArrayToStringConversion();
@@ -25,7 +28,18 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
         modelBuilder.Entity<JobFilter>()
             .Property(table => table.Tools)
             .HasStringArrayToStringConversion();
+        // Model builder for Job
         modelBuilder.Entity<Job>().Property(table => table.Requirements)
+            .HasStringArrayToStringConversion();
+
+        // Model builder for Projects entity
+        modelBuilder.Entity<Project>().Property(entity => entity.TechnologiesOrSkills)
+            .HasStringArrayToStringConversion();
+        modelBuilder.Entity<Project>().Property(entity => entity.Features)
+            .HasStringArrayToStringConversion();
+
+        // Model builder for Profile entity
+        modelBuilder.Entity<Profile>().Property(entity => entity.Awards)
             .HasStringArrayToStringConversion();
     }
 }
