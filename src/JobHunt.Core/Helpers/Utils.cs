@@ -33,4 +33,9 @@ public class Utils
         }
         return [];
     }
+
+    public static bool CompareArrayOfString(List<string>? arr1, List<string>? arr2)
+    {
+        return (arr1 ?? new List<string>()).SequenceEqual(arr2 ?? new List<string>());
+    }
 }
