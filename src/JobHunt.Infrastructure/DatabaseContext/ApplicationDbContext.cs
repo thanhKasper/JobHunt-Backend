@@ -37,6 +37,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
             .HasStringArrayToStringConversion();
         modelBuilder.Entity<Project>().Property(entity => entity.Features)
             .HasStringArrayToStringConversion();
+        modelBuilder.Entity<Project>().Property(entity => entity.Role)
+            .HasStringArrayToStringConversion();
 
         // Model builder for Profile entity
         modelBuilder.Entity<JobHunter>().Property(entity => entity.Awards)
