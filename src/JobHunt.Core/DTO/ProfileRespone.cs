@@ -12,6 +12,31 @@ public class ProfileResponse
     public string? Major { get; set; }
     public string? PhoneNumber { get; set; }
     public List<string>? Awards { get; set; }
+
+    public override bool Equals(object? obj)
+    {
+        if (obj == null || GetType() != obj.GetType())
+        {
+            return false;
+        }
+
+        var other = (ProfileResponse)obj;
+        return FullName == other.FullName &&
+               DateOfBirth == other.DateOfBirth &&
+               WorkingEmail == other.WorkingEmail &&
+               AboutMe == other.AboutMe &&
+               Address == other.Address &&
+               Education == other.Education &&
+               University == other.University &&
+               Major == other.Major &&
+               PhoneNumber == other.PhoneNumber &&
+               (Awards ?? new List<string>()).SequenceEqual(other?.Awards ?? new List<string>());
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
+    }
 }
 
 public static class ProfileResponseExtensions
