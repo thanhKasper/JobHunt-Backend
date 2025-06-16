@@ -1,6 +1,7 @@
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Infrastructure.DatabaseContext;
+using Microsoft.EntityFrameworkCore;
 
 namespace JobHunt.Infrastructure.Repositories;
 
@@ -8,33 +9,47 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
 
-    public Task<Project> AddProjectAsync(Project project)
+    public async Task<Project> AddProjectAsync(Project project)
     {
-        throw new NotImplementedException();
+        _dbContext.Projects.Add(project);
+        await _dbContext.SaveChangesAsync();
+        return project; 
     }
 
-    public Task<Project?> DeleteAsync(Guid projectId)
+    public async Task<Project?> DeleteAsync(Guid projectId)
     {
-        throw new NotImplementedException();
+        Project? proj = _dbContext.Projects.Find(projectId);
+        if (proj is null)
+        {
+            return null;
+        }
+        _dbContext.Projects.Remove(proj);
+        await _dbContext.SaveChangesAsync();
+        return proj;
     }
 
-    public Task<bool> ExistsAsync(Guid projectId)
+
+    public async Task<List<Project>> GetAllProjectsWithFilterAsync(Guid userId, string searchTerm, List<string> technologiesOrSkills)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Projects
+            .Include(p => p.ProjectOwner)
+            .Where(p => p.ProjectOwner.JobHunterId == userId &&
+                        p.ProjectTitle!.Contains(searchTerm) &&
+                        (p.TechnologiesOrSkills ?? new List<string>()).Any(t => technologiesOrSkills.Contains(t)))
+            .ToListAsync();
     }
 
-    public Task<List<Project>> GetAllProjectsWithFilterAsync(Guid userId, string? searchTerm = null, List<string>? technologiesOrSkills = null)
+    public async Task<Project?> GetByIdAsync(Guid projectId)
     {
-        throw new NotImplementedException();
+        return await _dbContext.Projects
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.ProjectId == projectId);
     }
 
-    public Task<Project?> GetByIdAsync(Guid projectId)
+    public async Task<Project> UpdateAsync(Project project)
     {
-        throw new NotImplementedException();
-    }
-
-    public Task<Project> UpdateAsync(Project project)
-    {
-        throw new NotImplementedException();
+        _dbContext.Projects.Update(project);
+        await _dbContext.SaveChangesAsync();
+        return project;
     }
 }

@@ -17,7 +17,4 @@ public interface IProjectRepository
     // Delete operations
     Task<Project?> DeleteAsync(Guid projectId);
 
-    // Existence and validation
-    Task<bool> ExistsAsync(Guid projectId);
-
 }
