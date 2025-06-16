@@ -23,5 +23,5 @@ public class Project
     public string? ProjectLink { get; set; }
 
     // Navigation property
-    public JobHunter User { get; set; } = null!;
+    public JobHunter ProjectOwner { get; set; } = null!;
 }
