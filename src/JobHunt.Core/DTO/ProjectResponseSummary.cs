@@ -1,0 +1,12 @@
+namespace JobHunt.Core.DTO;
+
+public class ProjectResponseSummary
+{
+    public Guid ProjectId { get; set; }
+    public string? ProjectTitle { get; set; }
+    public DateTime? StartDate { get; set; }
+    public DateTime? EndDate { get; set; }
+    public List<string>? Role { get; set; }
+    public List<string>? TechnologiesOrSkills { get; set; }
+    public string? ProjectLink { get; set; }
+}
