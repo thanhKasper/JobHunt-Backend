@@ -90,6 +90,8 @@ public class ProfileServiceTest
             .Create();
 
         JobHunter jobHunterProfile = profileRequest.ToJobHunter();
+        _profileRepositoryMock.Setup(repo => repo.GetProfileAsync(profileRequest.JobFinderId))
+            .ReturnsAsync(jobHunterProfile);
         _profileRepositoryMock.Setup(repo => repo.UpdateProfileAsync(It.IsAny<JobHunter>()))
             .ReturnsAsync(jobHunterProfile);
 
@@ -162,6 +164,23 @@ public class ProfileServiceTest
         var profileRequest = _fixture.Build<ProfileRequest>()
             .With(pr => pr.Major, "InvalidMajor") // Invalid major
             .Create();
+
+        // Act
+        Func<Task> act = async () => await _profileService.UpdateProfileAsync(profileRequest);
+
+        // Assert
+        await act.Should().ThrowAsync<ArgumentException>();
+    }
+
+    [Fact]
+    public async Task UpdateProfileAsync_NonExistentJobHunter_ShouldThrowArgumentException()
+    {
+        // Arrange
+        var profileRequest = _fixture.Build<ProfileRequest>()
+            .With(pr => pr.JobFinderId, Guid.NewGuid()) // Non-existent JobHunter ID
+            .Create();
+        _profileRepositoryMock.Setup(repo => repo.GetProfileAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(null as JobHunter); // Simulate non-existent profile
 
         // Act
         Func<Task> act = async () => await _profileService.UpdateProfileAsync(profileRequest);

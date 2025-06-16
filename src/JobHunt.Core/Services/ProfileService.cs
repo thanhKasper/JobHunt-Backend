@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
@@ -36,6 +37,12 @@ public class ProfileService(IProfileRepository profileRepository) : IProfileServ
             throw new ArgumentException(validationResults.FirstOrDefault()?.ErrorMessage);
         }
 
+        JobHunter? existingProfile = await _profileRepository.GetProfileAsync(profileRequest.JobFinderId);
+        if (existingProfile == null)
+        {
+            throw new ArgumentException($"Profile with ID {profileRequest.JobFinderId} not found.");
+        }
+        // Update the existing profile with the new values from the request
         var jobHunter = profileRequest.ToJobHunter();
         var updatedJobHunter = await _profileRepository.UpdateProfileAsync(jobHunter);
         return updatedJobHunter.ToProfileResponse();
