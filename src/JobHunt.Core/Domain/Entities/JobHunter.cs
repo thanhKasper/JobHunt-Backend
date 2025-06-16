@@ -1,12 +1,18 @@
 using System.ComponentModel.DataAnnotations;
 using JobHunt.Core.Domain.ValueObjects;
+using Microsoft.EntityFrameworkCore;
 
 namespace JobHunt.Core.Domain.Entities;
 
-public class Profile
+public class JobHunter
 {
     [Key]
-    public Guid ProfileId { get; set; }
+    public Guid JobHunterId { get; set; }
+    [MaxLength(128)]
+    [Required]
+    public string? FullName { get; set; }
+    public DateTime? DateOfBirth { get; set; }
+    [MaxLength(512)]
     public string? AboutMe { get; set; }
     [MaxLength(64)]
     public string? Address { get; set; }
@@ -22,6 +28,6 @@ public class Profile
     public string? WorkingEmail { get; set; }
     public List<string>? Awards { get; set; }
 
-    // Navigational Properties
-    public JobHunter JobFinder { get; set; } = null!;
+    // Navigational Property
+    public List<Project>? Projects { get; set; }
 }

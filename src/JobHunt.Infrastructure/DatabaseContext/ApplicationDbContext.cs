@@ -1,9 +1,7 @@
 using JobHunt.Core.Domain.Entities;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace JobHunt.Infrastructure.DatabaseContext;
 
@@ -13,7 +11,6 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
     public virtual DbSet<Job> Jobs { get; set; }
     public virtual DbSet<Company> Companies { get; set; }
     public virtual DbSet<JobHunter> JobHunters { get; set; }
-    public virtual DbSet<Profile> Profiles { get; set; }
     public virtual DbSet<Project> Projects { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,15 +39,8 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
             .HasStringArrayToStringConversion();
 
         // Model builder for Profile entity
-        modelBuilder.Entity<Profile>().Property(entity => entity.Awards)
+        modelBuilder.Entity<JobHunter>().Property(entity => entity.Awards)
             .HasStringArrayToStringConversion();
-
-        // Model builder for JobHunter entity
-        modelBuilder.Entity<JobHunter>()
-            .HasOne(e => e.Profile)
-            .WithOne(e => e.JobFinder)
-            .HasForeignKey<Profile>("UserId")
-            .IsRequired();
     }
 }
 
