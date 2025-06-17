@@ -1,0 +1,47 @@
+using JobHunt.Core.DTO;
+using JobHunt.Core.ServiceContracts;
+using Microsoft.AspNetCore.Mvc;
+
+namespace JobHunt.UI.Controllers;
+
+public class ProjectController : ApiControllerBase
+{
+    private readonly ILogger<ProjectController> _logger;
+    private readonly IProjectService _projectService;
+
+    public ProjectController(ILogger<ProjectController> logger, IProjectService projectService)
+    {
+        _projectService = projectService;
+        _logger = logger;
+    }
+
+    [HttpGet("{userId}/{projectId}")]
+    public async Task<ActionResult<ProjectResponse>> Index(Guid userId, Guid projectId)
+    {
+        var project = await _projectService.GetProjectByIdAsync(projectId);
+
+        return project;
+    }
+
+    [HttpGet("{userId}")]
+    public async Task<ActionResult<IEnumerable<ProjectResponse>>> GetAllWithFilter(
+        Guid userId, [FromQuery] string? searchTerm, [FromQuery] List<string>? technologiesOrSkills)
+    {
+        var projects = await _projectService.FilterProjectsAsync(userId, searchTerm, technologiesOrSkills);
+        return Ok(projects);
+    }
+
+    [HttpPut("{projectId}")]
+    public async Task<ActionResult<ProjectResponse>> Update(Guid projectId, [FromBody] ProjectRequest projectRequest)
+    {
+        var updatedProject = await _projectService.UpdateProjectAsync(projectId, projectRequest);
+        return updatedProject;
+    }
+
+    [HttpDelete]
+    public async Task<ActionResult<IEnumerable<ProjectResponse>>> Delete([FromBody] List<Guid?>? projectIds)
+    {
+        var deletedProjects = await _projectService.DeleteMultipleProjectsAsync(projectIds);
+        return deletedProjects;
+    }
+}
