@@ -12,6 +12,7 @@ public class JobFilter
     public string? FilterTitle { get; set; }
     [Required]
     public JobField? Occupation { get; set; }
+    public string? Location { get; set; }
     public JobLevel? Level { get; set; }
     public int? YearsOfExperience { get; set; }
     public List<string>? TechnicalKnowledge { get; set; }
@@ -39,7 +40,7 @@ public class JobFilter
         Level = YearsOfExperience switch
         {
             < 1 => JobLevel.Fresher,
-            <= 3 => JobLevel.Junior, 
+            <= 3 => JobLevel.Junior,
             <= 5 => JobLevel.Middle,
             _ => JobLevel.Senior,
         };

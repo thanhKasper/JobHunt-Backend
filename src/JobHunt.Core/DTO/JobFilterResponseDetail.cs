@@ -11,6 +11,7 @@ public class JobFilterResponseDetail : JobFilterResponseSimple
     public List<string>? Tools { get; set; }
     public List<string>? SoftSkills { get; set; }
     public List<string>? Languages { get; set; }
+    public string? WorkingLocation { get; set; }
 
     // These will be updated when Job Service is created
     // public int? TotalJobMatch { get; set; }
@@ -61,7 +62,8 @@ public static class JobFilterResponseExtension
             TechnicalKnowledge = jobFilter.TechnicalKnowledge,
             Title = jobFilter.FilterTitle,
             Tools = jobFilter.Tools,
-            YearsOfExperience = jobFilter.YearsOfExperience
+            YearsOfExperience = jobFilter.YearsOfExperience,
+            WorkingLocation = jobFilter.Location 
         };
     }
 }

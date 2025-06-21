@@ -9,7 +9,7 @@ public class Job
     [MaxLength(256)]
     [Required]
     public string? JobTitle { get; set; }
-    public List<string>? Requirements { get; set; }
+    public List<string>? MatchingRequirements { get; set; }
     public Company Company { get; set; } = null!;
     [Required]
     public DateTime? PublishedDate { get; set; }

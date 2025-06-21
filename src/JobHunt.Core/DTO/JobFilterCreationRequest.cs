@@ -28,6 +28,7 @@ public class JobFilterCreationRequest : IValidatableObject
     public List<string>? SoftSkills { get; set; }
 
     public List<string>? Languages { get; set; }
+    public string? WorkingLocation { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -77,7 +78,8 @@ public class JobFilterCreationRequest : IValidatableObject
             SoftSkills = SoftSkills,
             TechnicalKnowledge = TechnicalKnowledge,
             Tools = Tools,
-            YearsOfExperience = YearsOfExperience
+            YearsOfExperience = YearsOfExperience,
+            Location = WorkingLocation,
         };
     }
 }

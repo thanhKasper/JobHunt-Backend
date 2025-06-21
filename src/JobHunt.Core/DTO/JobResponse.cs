@@ -5,8 +5,7 @@ namespace JobHunt.Core.DTO;
 public class JobResponse
 {
     public string? JobTitle { get; set; }
-    public string? JobLevel { get; set; }
-    public List<string>? Requirements { get; set; }
+    public List<string>? MatchingRequirements { get; set; }
     public string? JobPostUrl { get; set; }
     public DateTime? PostedDate { get; set; }
     public string? Company { get; set; }
@@ -21,8 +20,7 @@ public class JobResponse
             return false;
 
         return JobTitle == other.JobTitle &&
-               JobLevel == other.JobLevel &&
-               Requirements?.SequenceEqual(other.Requirements ?? []) == true && // need reconsider carefully
+               MatchingRequirements?.SequenceEqual(other.MatchingRequirements ?? []) == true && // need reconsider carefully
                JobPostUrl == other.JobPostUrl &&
                PostedDate == other.PostedDate &&
                Company == other.Company &&
@@ -45,8 +43,7 @@ public static class JobEntityConverterExtension
         return new JobResponse
         {
             JobTitle = job.JobTitle,
-            JobLevel = job.JobFilter?.Level.ToString(),
-            Requirements = job.Requirements,
+            MatchingRequirements = job.MatchingRequirements,
             JobPostUrl = job.JobDetailUrl,
             PostedDate = job.PublishedDate,
             Company = job.Company?.CompanyName,
