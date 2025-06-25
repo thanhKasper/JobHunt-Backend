@@ -31,7 +31,7 @@ public class ProfileServiceTest
         var jobHunterId = Guid.NewGuid();
         var expectedProfile = new JobHunter
         {
-            JobHunterId = jobHunterId,
+            Id = jobHunterId,
             FullName = "John Doe",
             WorkingEmail = "john.doe@example.com"
 

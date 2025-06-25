@@ -18,7 +18,7 @@ public class ProjectRequest : IValidatableObject
     [MaxLength(2000, ErrorMessage = "Description cannot exceed 2000 characters")]
     public string? Description { get; set; }
 
-    public List<string>? Role { get; set; }
+    public List<string>? Roles { get; set; }
 
     public List<string>? TechnologiesOrSkills { get; set; }
 
@@ -47,7 +47,7 @@ public class ProjectRequest : IValidatableObject
             Description = Description,
             EndDate = EndDate,
             Features = Features,
-            Role = Role,
+            Roles = Roles,
             ProjectLink = ProjectLink,
             StartDate = StartDate,
             TechnologiesOrSkills = TechnologiesOrSkills,

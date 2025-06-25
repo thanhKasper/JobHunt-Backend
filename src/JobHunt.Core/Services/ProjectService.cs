@@ -128,7 +128,7 @@ public class ProjectService(
         existingProject.StartDate = request.StartDate;
         existingProject.EndDate = request.EndDate;
         existingProject.TechnologiesOrSkills = request.TechnologiesOrSkills;
-        existingProject.Role = request.Role;
+        existingProject.Roles = request.Roles;
         existingProject.Features = request.Features;
         existingProject.ProjectLink = request.ProjectLink;
 

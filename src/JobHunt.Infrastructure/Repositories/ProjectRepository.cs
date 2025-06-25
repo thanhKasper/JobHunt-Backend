@@ -33,7 +33,7 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
     {
         return await _dbContext.Projects
             .Include(p => p.ProjectOwner)
-            .Where(p => p.ProjectOwner.JobHunterId == userId &&
+            .Where(p => p.ProjectOwner.Id == userId &&
                         p.ProjectTitle!.Contains(searchTerm) &&
                         (p.TechnologiesOrSkills ?? new List<string>()).Any(t => technologiesOrSkills.Contains(t)))
             .ToListAsync();

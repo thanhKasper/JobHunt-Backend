@@ -37,7 +37,7 @@ public class ProfileRequest : IValidatableObject
     {
         return new JobHunter
         {
-            JobHunterId = JobFinderId,
+            Id = JobFinderId,
             FullName = FullName,
             DateOfBirth = DateOfBirth,
             AboutMe = AboutMe,

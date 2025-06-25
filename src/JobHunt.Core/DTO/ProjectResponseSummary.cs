@@ -10,7 +10,7 @@ public class ProjectResponseSummary
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public string? ProjectDescription { get; set; }
-    public List<string>? Role { get; set; }
+    public List<string>? Roles { get; set; }
     public List<string>? TechnologiesOrSkills { get; set; }
     public string? ProjectLink { get; set; }
 
@@ -27,7 +27,7 @@ public static class ProjectResponseSummaryExtension
             ProjectTitle = project.ProjectTitle,
             StartDate = project.StartDate,
             EndDate = project.EndDate,
-            Role = project.Role,
+            Roles = project.Roles,
             TechnologiesOrSkills = project.TechnologiesOrSkills,
             ProjectLink = project.ProjectLink,
             ProjectDescription = project.Description

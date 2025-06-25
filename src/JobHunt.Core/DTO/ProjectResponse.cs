@@ -10,7 +10,7 @@ public class ProjectResponse
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public string? Description { get; set; }
-    public List<string>? Role { get; set; }
+    public List<string>? Roles { get; set; }
     public List<string>? TechnologiesOrSkills { get; set; }
     public List<string>? Features { get; set; }
     public string? ProjectLink { get; set; }
@@ -30,7 +30,7 @@ public class ProjectResponse
             Description == other.Description &&
             Utils.CompareArrayOfString(Features, other.Features) &&
             Utils.CompareArrayOfString(TechnologiesOrSkills, other.TechnologiesOrSkills) &&
-            Utils.CompareArrayOfString(Role, other.Role) &&
+            Utils.CompareArrayOfString(Roles, other.Roles) &&
             ProjectLink == other.ProjectLink;
     }
 
@@ -53,7 +53,7 @@ public static class ProjectResponseExtension
             ProjectId = project.ProjectId,
             ProjectLink = project.ProjectLink,
             ProjectTitle = project.ProjectTitle,
-            Role = project.Role,
+            Roles = project.Roles,
             StartDate = project.StartDate,
             TechnologiesOrSkills = project.TechnologiesOrSkills,
         };
