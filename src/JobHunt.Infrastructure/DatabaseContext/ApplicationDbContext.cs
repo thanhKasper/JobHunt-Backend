@@ -1,11 +1,14 @@
 using JobHunt.Core.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace JobHunt.Infrastructure.DatabaseContext;
 
-public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions options) :
+    IdentityDbContext<JobHunter, ApplicationRole, Guid>(options)
 {
     public virtual DbSet<JobFilter> JobFilters { get; set; }
     public virtual DbSet<Job> Jobs { get; set; }
@@ -29,7 +32,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
             .Property(table => table.Tools)
             .HasStringArrayToStringConversion();
         // Model builder for Job
-        modelBuilder.Entity<Job>().Property(table => table.Requirements)
+        modelBuilder.Entity<Job>().Property(table => table.MatchingRequirements)
             .HasStringArrayToStringConversion();
 
         // Model builder for Projects entity
@@ -37,7 +40,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
             .HasStringArrayToStringConversion();
         modelBuilder.Entity<Project>().Property(entity => entity.Features)
             .HasStringArrayToStringConversion();
-        modelBuilder.Entity<Project>().Property(entity => entity.Role)
+        modelBuilder.Entity<Project>().Property(entity => entity.Roles)
             .HasStringArrayToStringConversion();
 
         // Model builder for Profile entity

@@ -16,7 +16,7 @@ public class Project
     public string? Description { get; set; }
     [MaxLength(100)]
     [Required]
-    public List<string>? Role { get; set; }
+    public List<string>? Roles { get; set; }
     public List<string>? TechnologiesOrSkills { get; set; }
     public List<string>? Features { get; set; }
     [MaxLength(500)]

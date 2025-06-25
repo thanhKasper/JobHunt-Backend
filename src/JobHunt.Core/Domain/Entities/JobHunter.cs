@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
 using JobHunt.Core.Domain.ValueObjects;
+using Microsoft.AspNetCore.Identity;
 
 namespace JobHunt.Core.Domain.Entities;
 
-public class JobHunter
+public class JobHunter : IdentityUser<Guid>
 {
-    [Key]
-    public Guid JobHunterId { get; set; }
     [MaxLength(128)]
     [Required]
     public string? FullName { get; set; }
@@ -21,8 +20,7 @@ public class JobHunter
     public string? University { get; set; }
     [Required]
     public Major Major { get; set; } = ValueObjects.Major.None;
-    [MaxLength(24)]
-    public string? PhoneNumber { get; set; }
+
     [MaxLength(128)]
     public string? WorkingEmail { get; set; }
     public List<string>? Awards { get; set; }
