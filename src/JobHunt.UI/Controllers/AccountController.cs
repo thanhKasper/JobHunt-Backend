@@ -15,9 +15,8 @@ public class AccountController(UserManager<JobHunter> userManager) : ApiControll
             Email = registrationForm.Email,
             FullName = registrationForm.Fullname,
         };
-        user.PasswordHash = _userManager.PasswordHasher.HashPassword(user, registrationForm.Password!);
 
-        IdentityResult result = await _userManager.CreateAsync(user);
+        IdentityResult result = await _userManager.CreateAsync(user, registrationForm.Password!);
 
         if (result.Succeeded)
         {
