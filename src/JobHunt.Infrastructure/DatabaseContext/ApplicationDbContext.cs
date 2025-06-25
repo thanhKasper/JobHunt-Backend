@@ -18,6 +18,7 @@ public class ApplicationDbContext(DbContextOptions options) :
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        base.OnModelCreating(modelBuilder);
         // Model builder for JobFilter
         modelBuilder.Entity<JobFilter>()
             .Property(table => table.Languages)
