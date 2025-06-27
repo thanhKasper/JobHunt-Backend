@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace JobHunt.Infrastructure.Repositories;
 
-public class JobFilterRepositories(ApplicationDbContext dbContext) : IJobFilterRepository
+public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRepository
 {
     private readonly ApplicationDbContext _dbContext = dbContext;
     public async Task<JobFilter?> FindOneJobFilterById(Guid id)
