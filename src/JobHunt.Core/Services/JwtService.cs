@@ -1,8 +1,10 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -26,8 +28,9 @@ public class JwtService(IConfiguration configuration) : IJwtService
             new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new Claim(JwtRegisteredClaimNames.Iat, DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString()),
-            new Claim(ClaimTypes.NameIdentifier, user.Email!),
+            new Claim(ClaimTypes.Email, user.Email!),
             new Claim(ClaimTypes.Name, user.FullName!),
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
         ];
 
         // Generate secret key
@@ -50,7 +53,52 @@ public class JwtService(IConfiguration configuration) : IJwtService
             Expiration = expirationTime,
             FullName = user.FullName,
             Email = user.Email,
-            UserId = user.Id.ToString()
+            UserId = user.Id.ToString(),
+            RefreshToken = this.GenerateRefreshToken(),
+            RefreshTokenExpiration = DateTime.UtcNow.AddMinutes(
+                _configuration.GetSection("RefreshToken").GetValue<int>("Expiration_Minutes", 120)
+            )
         };
+    }
+
+    private string GenerateRefreshToken()
+    {
+        byte[] randomBytes = new byte[64];
+        var randomGenerator = RandomNumberGenerator.Create();
+        randomGenerator.GetBytes(randomBytes);
+        return Convert.ToBase64String(randomBytes);
+    }
+
+    public ClaimsPrincipal? GetPrincipalsFromJWT(string? token)
+    {
+        ArgumentNullException.ThrowIfNull(token, "token cannot be empty");
+
+        // How should the Jwt should check for validation?
+        TokenValidationParameters tokenValidation = new()
+        {
+            ValidateIssuer = true,
+            ValidIssuer = _configuration.GetValue<string>("Jwt:Issuer", ""),
+            ValidateAudience = true,
+            ValidAudience = _configuration.GetValue<string>("Jwt:Audience", ""),
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                System.Text.Encoding.UTF8.GetBytes(
+                    _configuration.GetValue("Jwt:Key", "")
+                )
+            ),
+            ValidateLifetime = false
+        };
+        JwtSecurityTokenHandler jwtHandler = new();
+        ClaimsPrincipal claimsPrincipal =
+            jwtHandler.ValidateToken(token, tokenValidation, out SecurityToken secKey);
+
+        if (secKey is not JwtSecurityToken jwtToken ||
+            !jwtToken.Header.Alg.Contains(
+                SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+        {
+            throw new SecurityTokenException("Invalid Token");
+        }
+
+        return claimsPrincipal;
     }
 }

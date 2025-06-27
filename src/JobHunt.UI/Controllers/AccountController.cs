@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
@@ -31,15 +32,21 @@ public class AccountController(
 
         if (result.Succeeded)
         {
-            await _signInManager.SignInAsync(user, isPersistent: false);
             var authenticationResponse = _jwtService.GenerateToken(user);
+            user.RefreshToken = authenticationResponse.RefreshToken;
+            user.RefreshTokenExpirationDateTime = authenticationResponse.RefreshTokenExpiration;
+            await _signInManager.SignInAsync(user, isPersistent: false);
             return authenticationResponse;
         }
         else
         {
-            IEnumerable<string> errorList = result.Errors.Select(e => e.Description);
-            // return Problem(result.Errors.Select(e => e.Description).FirstOrDefault("Registration failed"));
-            return Problem(errorList.FirstOrDefault());
+            IdentityError error = result.Errors.First();
+
+            return ValidationProblem(
+                title: error.Code,
+                detail: error.Description,
+                statusCode: 400
+            );
         }
     }
 
@@ -59,10 +66,43 @@ public class AccountController(
             if (result.Succeeded)
             {
                 var authenRes = _jwtService.GenerateToken(user);
+                user.RefreshToken = authenRes.RefreshToken;
+                user.RefreshTokenExpirationDateTime = authenRes.RefreshTokenExpiration;
+                await _userManager.UpdateAsync(user);
                 return Ok(authenRes);
             }
         }
 
         return Problem("Invalid login attempt. Please check your email and password.");
+    }
+
+    [HttpPost("revoke-token")]
+    public async Task<IActionResult> RevokeToken([FromBody] TokenModel tokenModel)
+    {
+        var claimsPrinciple = _jwtService.GetPrincipalsFromJWT(tokenModel.AccessToken);
+        if (claimsPrinciple is null) return BadRequest("Invalid jwt token");
+        string? userId = claimsPrinciple.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (userId is null) return BadRequest("Invalid jwt format");
+
+        var user = await _userManager.FindByIdAsync(userId);
+
+        if (user is null ||
+            (user.RefreshTokenExpirationDateTime ?? DateTime.UtcNow)
+            .ToUniversalTime() < DateTime.UtcNow ||
+            user.RefreshToken != tokenModel.RefreshToken)
+        {
+            return BadRequest("Expired Token, please sign in again");
+        }
+        else
+        {
+            AuthenticationResponse newToken = _jwtService.GenerateToken(user);
+
+            user.RefreshToken = newToken.RefreshToken;
+            user.RefreshTokenExpirationDateTime = newToken.RefreshTokenExpiration;
+            await _userManager.UpdateAsync(user);
+            return Ok(newToken);
+        }
+
     }
 }

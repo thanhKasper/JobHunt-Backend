@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.DTO;
 
@@ -11,4 +12,6 @@ public interface IJwtService
     /// <param name="user">The user for whom the token is generated.</param>
     /// <returns>An AuthenticationResponse containing the JWT token and expiration.</returns>
     AuthenticationResponse GenerateToken(JobHunter user);
+
+    ClaimsPrincipal? GetPrincipalsFromJWT(string? token);
 }
