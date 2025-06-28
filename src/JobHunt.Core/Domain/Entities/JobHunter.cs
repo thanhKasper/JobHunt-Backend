@@ -34,4 +34,5 @@ public class JobHunter : IdentityUser<Guid>
 
     // Navigational Property
     public List<Project>? Projects { get; set; }
+    public List<JobFilter> JobFilters { get; set; } = [];
 }

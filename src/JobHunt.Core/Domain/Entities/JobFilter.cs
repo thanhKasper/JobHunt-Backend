@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using JobHunt.Core.Domain.ValueObjects;
 
@@ -7,6 +8,10 @@ public class JobFilter
 {
     [Key]
     public Guid JobFilterId { get; set; }
+    [DefaultValue(true)]
+    public bool? IsActive { get; set; }
+    [DefaultValue(false)]
+    public bool? IsStarred { get; set; }
     [Required]
     [MaxLength(128)]
     public string? FilterTitle { get; set; }
@@ -21,7 +26,10 @@ public class JobFilter
     public List<string>? Languages { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? LastUpdated { get; set; }
+
+    // Navigational Property
     public List<Job>? MatchJobList { get; set; }
+    public JobHunter JobFilterOwner { get; set; } = null!;
 
     public void FillYearExp()
     {
