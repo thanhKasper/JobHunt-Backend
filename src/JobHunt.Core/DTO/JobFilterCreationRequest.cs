@@ -53,7 +53,7 @@ public class JobFilterCreationRequest : IValidatableObject
                 YearsOfExperience >= 1)
             {
                 yield return new ValidationResult(
-                    $"{Level} cannot have experience greater or equal to {YearsOfExperience}"
+                    $"{Level} cannot have experience greater or equal to 1"
                 );
             }
             else if (

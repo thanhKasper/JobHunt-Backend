@@ -16,6 +16,7 @@ public class JobFilterController(
         [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId
     )
     {
+        if (!userId.HasValue) return BadRequest("UserId is not provided");
         var jobFilterList =
             await _jobFilterByUserService.GetAllJobFiltersFromUserAsync(userId);
         return jobFilterList;
