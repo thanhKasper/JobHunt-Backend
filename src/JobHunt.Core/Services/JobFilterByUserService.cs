@@ -33,13 +33,10 @@ public class JobFilterByUserService(
             var user = await _userManager.FindByIdAsync(userId.ToString()!)
                 ?? throw new ArgumentException("User Not Found");
 
-            Task<int> totalJobsCountTask = _jobfilterRepo.GetTotalJobFiltersOfUserAsync(user.Id);
-            Task<int> activeJobsCountTask = _jobfilterRepo.GetTotalActiveJobFiltersOfUserAsync(user.Id);
-            Task<List<JobFilter>> jobFilterFromuserTask = _jobfilterRepo.GetAllJobFiltersOfUserAsync(user.Id);
+            int totalJobsCount = await _jobfilterRepo.GetTotalJobFiltersOfUserAsync(user.Id);
+            int activeJobsCount  = await _jobfilterRepo.GetTotalActiveJobFiltersOfUserAsync(user.Id);
+            List<JobFilter> jobFilters = await _jobfilterRepo.GetAllJobFiltersOfUserAsync(user.Id);
 
-            int totalJobsCount = await totalJobsCountTask;
-            int activeJobsCount = await activeJobsCountTask;
-            List<JobFilter> jobFilters = await jobFilterFromuserTask;
 
             return new JobFilterListResponse()
             {
