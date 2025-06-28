@@ -11,6 +11,7 @@ public class JobFilterController(
 {
     private readonly IJobFilterService _jobFilterService = jobFilterService;
     private readonly IJobFilterByUserService _jobFilterByUserService = jobFilterByUserService;
+    
     [HttpGet]
     public async Task<ActionResult<JobFilterListResponse>> GetAllJobFilters(
         [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId

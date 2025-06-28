@@ -12,20 +12,28 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         // Get the assembly that contains your Program class
 
-        base.ConfigureWebHost(builder);
+        // base.ConfigureWebHost(builder);
 
         builder.UseEnvironment("Test");
         builder.ConfigureServices(
             services =>
             {
-                var descriptor = services.SingleOrDefault(
-                    temp => temp.ServiceType == typeof(DbContextOptions<ApplicationDbContext>)
-                );
+                // Remove all EF Core related services
+                var descriptorsToRemove = services.Where(d =>
+                    d.ServiceType == typeof(ApplicationDbContext) ||
+                    d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>) ||
+                    d.ServiceType == typeof(DbContextOptions) ||
+                    d.ServiceType.Name.Contains("EntityFramework") ||
+                    d.ServiceType.Name.Contains("DbContext") ||
+                    (d.ImplementationType?.Name.Contains("EntityFramework") == true) ||
+                    (d.ImplementationType?.Name.Contains("SqlServer") == true)
+                ).ToList();
 
-                if (descriptor != null)
+                foreach (var descriptor in descriptorsToRemove)
                 {
                     services.Remove(descriptor);
                 }
+
                 services.AddDbContext<ApplicationDbContext>(option =>
                 {
                     option.UseInMemoryDatabase("testDB");

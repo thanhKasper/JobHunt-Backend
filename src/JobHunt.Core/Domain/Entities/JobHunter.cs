@@ -7,9 +7,7 @@ namespace JobHunt.Core.Domain.Entities;
 public class JobHunter : IdentityUser<Guid>
 {
     // Token related fields
-    [Required]
     public string? RefreshToken { get; set; } = string.Empty;
-    [Required]
     public DateTime? RefreshTokenExpirationDateTime { get; set; }
 
     // Business information
