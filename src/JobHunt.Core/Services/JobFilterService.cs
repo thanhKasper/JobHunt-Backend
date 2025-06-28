@@ -5,12 +5,16 @@ using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.Helpers;
 using JobHunt.Core.ServiceContracts;
+using Microsoft.AspNetCore.Identity;
 
 namespace JobHunt.Core.Services;
 
-public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterService
+public class JobFilterService(
+    IJobFilterRepository jobFilterRepo,
+    UserManager<JobHunter> userManager) : IJobFilterService
 {
     private readonly IJobFilterRepository _jobFilterRepo = jobFilterRepo;
+    private readonly UserManager<JobHunter> _userManager = userManager;
     public async Task<JobFilterResponseDetail> CreateNewJobFilterAsync(JobFilterCreationRequest? jobFilterRequest)
     {
         // Handle when jobFilterRequest is null
@@ -25,7 +29,17 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
             throw new ArgumentException(errorList.FirstOrDefault()?.ErrorMessage);
         }
 
-        // Check if type mismatch between JobLevel and Years of Experience
+        // Handling case when userid field inside DTO is empty
+        if (!jobFilterRequest.UserId.HasValue)
+        {
+            throw new ArgumentNullException(nameof(jobFilterRequest), "UserId is required");
+        }
+
+        // Throws exception when UserId not exists.
+        var foundUser =
+            await _userManager.FindByIdAsync(jobFilterRequest.UserId.Value.ToString()) ??
+            throw new ArgumentException(
+                "Cannot find a user with that id", nameof(jobFilterRequest));
 
 
         // Remove duplication
@@ -34,14 +48,20 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
         jobFilterRequest.SoftSkills = Utils.RemoveKeywordDuplication(jobFilterRequest.SoftSkills);
         jobFilterRequest.TechnicalKnowledge = Utils.RemoveKeywordDuplication(jobFilterRequest.TechnicalKnowledge);
 
+        // Default assign IsStarred & IsActive
+        jobFilterRequest.IsActive = true;
+        jobFilterRequest.IsStarred = false;
+
+        // Assign user to that jobFilterRequest
+
 
         JobFilter jobFilter = jobFilterRequest.ToJobFilter();
 
         // Fill empty YearsOfExperience and Level
-        if (jobFilter.YearsOfExperience == null) jobFilter.FillJobLevel();
-        else if (jobFilter.Level == null) jobFilter.FillYearExp();
+        if (jobFilter.YearsOfExperience == null) jobFilter.FillYearExp();
+        else if (jobFilter.Level == null) jobFilter.FillJobLevel();
 
-        JobFilter? newJobFilter = await _jobFilterRepo.AddJobFilterAsync(jobFilter);
+        JobFilter? newJobFilter = await _jobFilterRepo.AddJobFilterAsync(jobFilter, foundUser);
         JobFilterResponseDetail? response = newJobFilter?.ToJobFilterResponseDetail();
         return response ?? new()
         {

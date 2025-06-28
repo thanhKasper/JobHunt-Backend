@@ -62,8 +62,10 @@ public static class JobFilterResponseExtension
             TechnicalKnowledge = jobFilter.TechnicalKnowledge,
             Title = jobFilter.FilterTitle,
             Tools = jobFilter.Tools,
+            IsActive = jobFilter.IsActive,
+            IsStarred = jobFilter.IsStarred,
             YearsOfExperience = jobFilter.YearsOfExperience,
-            WorkingLocation = jobFilter.Location 
+            WorkingLocation = jobFilter.Location
         };
     }
 }

@@ -1,5 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Principal;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Infrastructure.DatabaseContext;
@@ -28,8 +26,9 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
         return jobFilter;
     }
 
-    public async Task<JobFilter?> AddJobFilterAsync(JobFilter jobFilter)
+    public async Task<JobFilter?> AddJobFilterAsync(JobFilter jobFilter, JobHunter user)
     {
+        jobFilter.JobFilterOwner = user;
         await _dbContext.JobFilters.AddAsync(jobFilter);
         await _dbContext.SaveChangesAsync();
         return jobFilter;

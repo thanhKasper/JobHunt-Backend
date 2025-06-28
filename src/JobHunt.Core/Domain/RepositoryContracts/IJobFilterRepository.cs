@@ -6,7 +6,7 @@ public interface IJobFilterRepository
 {
     public Task<List<JobFilter>?> GetAllJobFiltersAsync();
     public Task<JobFilter?> FindOneJobFilterByIdAsync(Guid id);
-    public Task<JobFilter?> AddJobFilterAsync(JobFilter jobFilter);
+    public Task<JobFilter?> AddJobFilterAsync(JobFilter jobFilter, JobHunter user);
     public Task<JobFilter?> RemoveJobFilterByIdAsync(Guid id);
     public Task<int> GetTotalJobFiltersOfUserAsync(Guid id);
     public Task<int> GetTotalActiveJobFiltersOfUserAsync(Guid id);
