@@ -1,10 +1,12 @@
-﻿using AutoFixture;
+﻿using System.Threading.Tasks;
+using AutoFixture;
 using FluentAssertions;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.Helpers;
 using JobHunt.Core.Services;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 using Xunit.Abstractions;
 using Xunit.Sdk;
@@ -16,21 +18,30 @@ public class JobFilterServiceTest
     private readonly JobFilterService _jobfilterService;
     private readonly IFixture _fixture;
     private readonly Mock<IJobFilterRepository> _jobFilterRepositoryMock;
+    private readonly Mock<UserManager<JobHunter>> _userManagerMock;
     private readonly ITestOutputHelper _testOutputHelper;
 
     public JobFilterServiceTest(ITestOutputHelper testOutputHelper)
     {
         _fixture = new Fixture();
-        var initialJobFilters = new List<JobFilter>();
+        _fixture.Behaviors.OfType<ThrowingRecursionBehavior>().ToList()
+            .ForEach(b => _fixture.Behaviors.Remove(b));
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+
         _testOutputHelper = testOutputHelper;
 
         _jobFilterRepositoryMock = new Mock<IJobFilterRepository>();
         IJobFilterRepository jobFilterRepo = _jobFilterRepositoryMock.Object;
 
-        _jobfilterService = new JobFilterService(jobFilterRepo);
+        var store = new Mock<IUserStore<JobHunter>>();
+        _userManagerMock = new Mock<UserManager<JobHunter>>(
+            store.Object,
+            null!, null!, null!, null!, null!, null!, null!, null!);
+
+        _jobfilterService = new JobFilterService(jobFilterRepo, _userManagerMock.Object);
     }
 
-    #region CreateNewJobFilter
+    #region CreateNewJobFilterAsync
     [Fact]
     public async Task CreateNewJobFilter_EmptyArgument()
     {
@@ -40,7 +51,7 @@ public class JobFilterServiceTest
         // Action
         async Task testAction()
         {
-            await _jobfilterService.CreateNewJobFilter(filterReq);
+            await _jobfilterService.CreateNewJobFilterAsync(filterReq);
         }
 
         // Assert
@@ -60,7 +71,7 @@ public class JobFilterServiceTest
         JobFilter jobFilter = req.ToJobFilter();
 
         await Assert.ThrowsAsync<ArgumentException>(
-            async () => await _jobfilterService.CreateNewJobFilter(req)
+            async () => await _jobfilterService.CreateNewJobFilterAsync(req)
         );
     }
 
@@ -74,7 +85,7 @@ public class JobFilterServiceTest
             .Create();
 
         await Assert.ThrowsAsync<ArgumentException>(
-            async () => await _jobfilterService.CreateNewJobFilter(req)
+            async () => await _jobfilterService.CreateNewJobFilterAsync(req)
         );
     }
 
@@ -88,7 +99,7 @@ public class JobFilterServiceTest
             .Create();
 
         await Assert.ThrowsAsync<ArgumentException>(
-            async () => await _jobfilterService.CreateNewJobFilter(req)
+            async () => await _jobfilterService.CreateNewJobFilterAsync(req)
         );
     }
 
@@ -104,10 +115,14 @@ public class JobFilterServiceTest
 
         JobFilter jobFilter = req.ToJobFilter();
 
-        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>()))
+        _userManagerMock.Setup(repo => repo.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(_fixture.Create<JobHunter>());
+
+        _jobFilterRepositoryMock.Setup(temp =>
+            temp.AddJobFilterAsync(It.IsAny<JobFilter>(), It.IsAny<JobHunter>()))
             .ReturnsAsync(jobFilter);
 
-        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilter(req);
+        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilterAsync(req);
 
         _testOutputHelper.WriteLine("Expect:");
         _testOutputHelper.WriteLine(jobFilter.ToJobFilterResponseDetail().ToString());
@@ -128,10 +143,17 @@ public class JobFilterServiceTest
             .With(temp => temp.Level, () => null)
             .Create();
 
-        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>()))
-            .ReturnsAsync(req.ToJobFilter());
+        _userManagerMock.Setup(repo => repo.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(_fixture.Create<JobHunter>());
 
-        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilter(req);
+        _jobFilterRepositoryMock.Setup(
+            temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>(), It.IsAny<JobHunter>()))
+            .Returns<JobFilter?, JobHunter>((jobfilter, user) =>
+            {
+                return Task.FromResult(jobfilter);
+            });
+
+        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilterAsync(req);
 
         Assert.NotNull(res!.Level);
     }
@@ -146,25 +168,50 @@ public class JobFilterServiceTest
             .With(temp => temp.Level, "junior")
             .Create();
 
-        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>()))
-            .ReturnsAsync(req.ToJobFilter());
+        _userManagerMock.Setup(repo => repo.FindByIdAsync(It.IsAny<string>()))
+        .ReturnsAsync(_fixture.Create<JobHunter>());
 
-        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilter(req);
+        _jobFilterRepositoryMock.Setup(
+            temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>(), It.IsAny<JobHunter>()))
+            .Returns<JobFilter?, JobHunter>((jobfilter, user) =>
+            {
+                return Task.FromResult(jobfilter);
+            });
+
+        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilterAsync(req);
 
         Assert.NotNull(res!.Level);
     }
 
     [Fact]
-    public void CreateNewJobFilter_RemoveDuplicateKeywords()
+    public async Task CreateNewJobFilterAsync_RemoveDuplicateKeys()
     {
-        // Because using Moq, i already prepare the correct result, therefore i don't how whether my
-        // utils function work correctly, hence, i will directly test the utils functions
-        List<string> test = ["C#", "c#", "Java", "Powerpoint", "powerpoint"];
-        List<string> expect = ["C#", "JAVA", "POWERPOINT"];
-        List<string> actual = Utils.RemoveKeywordDuplication(test);
-        _testOutputHelper.WriteLine("Expect: {0}", Utils.ToStringArray<string>(expect));
-        _testOutputHelper.WriteLine("Actual: {0}", Utils.ToStringArray<string>(actual));
-        Assert.Equal(expect.Count, actual.Count);
+        JobFilterCreationRequest req = _fixture.Build<JobFilterCreationRequest>()
+            .With(jf => jf.Occupation, "Information_Technology")
+            .With(jf => jf.Level, "intern")
+            .With(jf => jf.YearsOfExperience, 0)
+            .With(jf => jf.TechnicalKnowledge, ["a", "a", "b", "b", "c"])
+            .With(jf => jf.Tools, ["git", "git", "github", "docker", "Github"])
+            .With(jf => jf.Languages, ["asd", "ASd", "ddd", "jk", "jk", "jk"])
+            .With(jf => jf.SoftSkills, ["dd", "dd", "dd", "dd"])
+            .Create();
+
+        _userManagerMock.Setup(service => service.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(_fixture.Build<JobHunter>()
+                .With(user => user.Id, Guid.NewGuid()).Create());
+
+        _jobFilterRepositoryMock.Setup(repo =>
+            repo.AddJobFilterAsync(It.IsAny<JobFilter>(), It.IsAny<JobHunter>()))
+            .Returns<JobFilter?, JobHunter>((jobfilter, user) =>
+            {
+                return Task.FromResult(jobfilter);
+            });
+
+        JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilterAsync(req);
+        res.TechnicalKnowledge.Should().HaveCount(3);
+        res.Tools.Should().HaveCount(3);
+        res.Languages.Should().HaveCount(3);
+        res.SoftSkills.Should().HaveCount(1);
     }
 
     [Fact]
@@ -178,7 +225,7 @@ public class JobFilterServiceTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            await _jobfilterService.CreateNewJobFilter(req);
+            await _jobfilterService.CreateNewJobFilterAsync(req);
         });
     }
 
@@ -192,10 +239,13 @@ public class JobFilterServiceTest
             .With(temp => temp.Level, "junior")
             .Create();
 
-        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>()))
+        _userManagerMock.Setup(repo => repo.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(_fixture.Create<JobHunter>());
+
+        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>(), It.IsAny<JobHunter>()))
             .ReturnsAsync(req.ToJobFilter());
 
-        var res = await _jobfilterService.CreateNewJobFilter(req);
+        var res = await _jobfilterService.CreateNewJobFilterAsync(req);
 
         Assert.NotNull(res);
     }
@@ -211,7 +261,7 @@ public class JobFilterServiceTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            await _jobfilterService.CreateNewJobFilter(req);
+            await _jobfilterService.CreateNewJobFilterAsync(req);
         });
     }
 
@@ -226,7 +276,7 @@ public class JobFilterServiceTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            await _jobfilterService.CreateNewJobFilter(req);
+            await _jobfilterService.CreateNewJobFilterAsync(req);
         });
     }
 
@@ -241,19 +291,19 @@ public class JobFilterServiceTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            await _jobfilterService.CreateNewJobFilter(req);
+            await _jobfilterService.CreateNewJobFilterAsync(req);
         });
     }
     #endregion
 
-    #region GetAllJobFilterSimple
+    #region GetAllJobFilterSimpleAsync
     [Fact]
     public async Task GetAllJobFilterSimple_EmptyList()
     {
         _jobFilterRepositoryMock.Setup(temp => temp.GetAllJobFiltersAsync())
             .ReturnsAsync([]);
 
-        List<JobFilterResponseSimple> actualList = await _jobfilterService.GetAllJobFilterSimple();
+        List<JobFilterResponseSimple> actualList = await _jobfilterService.GetAllJobFilterSimpleAsync();
 
         actualList.Should().BeEmpty();
     }
@@ -271,18 +321,18 @@ public class JobFilterServiceTest
             .ReturnsAsync([jobFilter1, jobFilter2]);
 
         int expectResult = 2;
-        int actual = (await _jobfilterService.GetAllJobFilterSimple()).Count;
+        int actual = (await _jobfilterService.GetAllJobFilterSimpleAsync()).Count;
 
 
         actual.Should().Be(expectResult);
     }
     #endregion
 
-    #region GetJobFilterDetail
+    #region GetJobFilterDetailAsync
     [Fact]
     public async Task GetJobFilterDetail_EmptyArgument()
     {
-        JobFilterResponseDetail expected = await _jobfilterService.GetJobFilterDetail(null);
+        JobFilterResponseDetail expected = await _jobfilterService.GetJobFilterDetailAsync(null);
         expected.Id.Should().Be(Guid.Empty);
     }
 
@@ -291,7 +341,7 @@ public class JobFilterServiceTest
     {
         _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterByIdAsync(Guid.NewGuid()))
             .ReturnsAsync(() => null);
-        JobFilterResponseDetail expected = await _jobfilterService.GetJobFilterDetail(Guid.NewGuid());
+        JobFilterResponseDetail expected = await _jobfilterService.GetJobFilterDetailAsync(Guid.NewGuid());
         expected.Id.Should().Be(Guid.Empty);
     }
 
@@ -307,17 +357,17 @@ public class JobFilterServiceTest
                 .Create()
             );
 
-        Assert.NotNull(_jobfilterService.GetJobFilterDetail(randomGuid));
+        Assert.NotNull(_jobfilterService.GetJobFilterDetailAsync(randomGuid));
     }
     #endregion
 
-    #region DeleteJobFilter
+    #region DeleteJobFilterAsync
     [Fact]
     public async Task DeleteJobFilter_NonExistingJobFilterId()
     {
         _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterByIdAsync(Guid.NewGuid()))
             .ReturnsAsync(() => null);
-        JobFilterResponseSimple res = await _jobfilterService.DeleteJobFilter(Guid.NewGuid());
+        JobFilterResponseSimple res = await _jobfilterService.DeleteJobFilterAsync(Guid.NewGuid());
         res.Id.Should().Be(Guid.Empty);
     }
 
@@ -328,7 +378,7 @@ public class JobFilterServiceTest
         _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterByIdAsync(randomGuid))
             .ReturnsAsync(() => null);
 
-        var res = await _jobfilterService.DeleteJobFilter(randomGuid);
+        var res = await _jobfilterService.DeleteJobFilterAsync(randomGuid);
         res.Id.Should().Be(Guid.Empty);
     }
 
@@ -344,7 +394,7 @@ public class JobFilterServiceTest
                 .Create()
             );
 
-        Assert.NotNull(_jobfilterService.DeleteJobFilter(randomGuid));
+        Assert.NotNull(_jobfilterService.DeleteJobFilterAsync(randomGuid));
     }
 
 
