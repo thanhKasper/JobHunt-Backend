@@ -7,5 +7,5 @@ namespace JobHunt.Core.ServiceContracts;
 /// </summary>
 public interface IJobFilterByUserService
 {
-    public Task<JobFilterListResponse> GetAllJobFiltersFromUser(Guid? userId);
+    public Task<JobFilterListResponse> GetAllJobFiltersFromUserAsync(Guid? userId);
 }

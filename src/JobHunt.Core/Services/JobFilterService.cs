@@ -11,7 +11,7 @@ namespace JobHunt.Core.Services;
 public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterService
 {
     private readonly IJobFilterRepository _jobFilterRepo = jobFilterRepo;
-    public async Task<JobFilterResponseDetail> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest)
+    public async Task<JobFilterResponseDetail> CreateNewJobFilterAsync(JobFilterCreationRequest? jobFilterRequest)
     {
         // Handle when jobFilterRequest is null
         ArgumentNullException.ThrowIfNull(jobFilterRequest);
@@ -49,23 +49,23 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
         };
     }
 
-    public async Task<JobFilterResponseSimple> DeleteJobFilter(Guid? jobFilterId)
+    public async Task<JobFilterResponseSimple> DeleteJobFilterAsync(Guid? jobFilterId)
     {
         // The enlightment of async/await :))
-        var getJobFilterTask = GetJobFilterDetail(jobFilterId);
+        var getJobFilterTask = await GetJobFilterDetailAsync(jobFilterId);
         if (jobFilterId == null) return new JobFilterResponseSimple() { Id = Guid.Empty };
         JobFilter? deleteJobFilter = await _jobFilterRepo.RemoveJobFilterByIdAsync(jobFilterId.Value);
         if (deleteJobFilter != null) return deleteJobFilter.ToJobFilterResponseSimple();
         return new JobFilterResponseSimple() { Id = Guid.Empty };
     }
 
-    public async Task<List<JobFilterResponseSimple>> GetAllJobFilterSimple()
+    public async Task<List<JobFilterResponseSimple>> GetAllJobFilterSimpleAsync()
     {
         List<JobFilter> jobFilterList = await _jobFilterRepo.GetAllJobFiltersAsync() ?? [];
         return [.. jobFilterList.Select(ele => ele.ToJobFilterResponseSimple())];
     }
 
-    public async Task<JobFilterResponseDetail> GetJobFilterDetail(Guid? jobFilterId)
+    public async Task<JobFilterResponseDetail> GetJobFilterDetailAsync(Guid? jobFilterId)
     {
         if (jobFilterId != null)
         {

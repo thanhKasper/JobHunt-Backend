@@ -1,11 +1,8 @@
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace JobHunt.Core.Services;
 
@@ -24,7 +21,7 @@ public class JobFilterByUserService(
     /// <returns>A list of job filters created by users, empty list if the user have not created any job filters yet.</returns>
     /// <exception cref="ArgumentNullException">Throws if the <c>userId</c> is null</exception>
     /// <exception cref="ArgumentException">Throws if there is no user with the ID <c>userId</c></exception>
-    public async Task<JobFilterListResponse> GetAllJobFiltersFromUser(Guid? userId)
+    public async Task<JobFilterListResponse> GetAllJobFiltersFromUserAsync(Guid? userId)
     {
         // Empty argument
         if (userId is null)
