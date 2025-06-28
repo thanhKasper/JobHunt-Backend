@@ -8,6 +8,8 @@ public class JobFilterResponseSimple
     public Guid Id { get; set; }
     public string? Title { get; set; }
     public string? Occupation { get; set; }
+    public bool? IsStarred { get; set; }
+    public bool? IsActive { get; set; }
     public DateTime? CreatedAt { get; set; }
 }
 
@@ -20,7 +22,9 @@ public static class JobFilterConverterExtension
             Id = jobFilter.JobFilterId,
             CreatedAt = jobFilter.CreatedAt,
             Occupation = jobFilter.Occupation.ToString(),
-            Title = jobFilter.FilterTitle
+            Title = jobFilter.FilterTitle,
+            IsActive = jobFilter.IsActive,
+            IsStarred = jobFilter.IsStarred
         };
     }
 }
