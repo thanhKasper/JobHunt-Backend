@@ -8,6 +8,8 @@ namespace JobHunt.Core.DTO;
 public class JobFilterCreationRequest : IValidatableObject
 {
     [Required]
+    public Guid? UserId { get; set; }
+    [Required]
     public string? FilterTitle { get; set; }
 
     [Required(ErrorMessage = "{0} cannot be empty")]
