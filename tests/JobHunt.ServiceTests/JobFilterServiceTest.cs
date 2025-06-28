@@ -104,7 +104,7 @@ public class JobFilterServiceTest
 
         JobFilter jobFilter = req.ToJobFilter();
 
-        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilter(It.IsAny<JobFilter>()))
+        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>()))
             .ReturnsAsync(jobFilter);
 
         JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilter(req);
@@ -128,7 +128,7 @@ public class JobFilterServiceTest
             .With(temp => temp.Level, () => null)
             .Create();
 
-        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilter(It.IsAny<JobFilter>()))
+        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>()))
             .ReturnsAsync(req.ToJobFilter());
 
         JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilter(req);
@@ -146,7 +146,7 @@ public class JobFilterServiceTest
             .With(temp => temp.Level, "junior")
             .Create();
 
-        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilter(It.IsAny<JobFilter>()))
+        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>()))
             .ReturnsAsync(req.ToJobFilter());
 
         JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilter(req);
@@ -192,7 +192,7 @@ public class JobFilterServiceTest
             .With(temp => temp.Level, "junior")
             .Create();
 
-        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilter(It.IsAny<JobFilter>()))
+        _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>()))
             .ReturnsAsync(req.ToJobFilter());
 
         var res = await _jobfilterService.CreateNewJobFilter(req);
@@ -250,7 +250,7 @@ public class JobFilterServiceTest
     [Fact]
     public async Task GetAllJobFilterSimple_EmptyList()
     {
-        _jobFilterRepositoryMock.Setup(temp => temp.GetAllJobFilters())
+        _jobFilterRepositoryMock.Setup(temp => temp.GetAllJobFiltersAsync())
             .ReturnsAsync([]);
 
         List<JobFilterResponseSimple> actualList = await _jobfilterService.GetAllJobFilterSimple();
@@ -262,12 +262,12 @@ public class JobFilterServiceTest
     public async Task GetAllJobFilterSimple_GetFewJobFilters()
     {
         JobFilter jobFilter1 = _fixture.Build<JobFilter>()
-            .With(temp => temp.MatchJobList, [])    
+            .With(temp => temp.MatchJobList, [])
             .Create();
         JobFilter jobFilter2 = _fixture.Build<JobFilter>()
             .With(temp => temp.MatchJobList, [])
             .Create();
-        _jobFilterRepositoryMock.Setup(temp => temp.GetAllJobFilters())
+        _jobFilterRepositoryMock.Setup(temp => temp.GetAllJobFiltersAsync())
             .ReturnsAsync([jobFilter1, jobFilter2]);
 
         int expectResult = 2;
@@ -289,7 +289,7 @@ public class JobFilterServiceTest
     [Fact]
     public async Task GetJobFilterDetail_NotFoundJobFilterId()
     {
-        _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterById(Guid.NewGuid()))
+        _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterByIdAsync(Guid.NewGuid()))
             .ReturnsAsync(() => null);
         JobFilterResponseDetail expected = await _jobfilterService.GetJobFilterDetail(Guid.NewGuid());
         expected.Id.Should().Be(Guid.Empty);
@@ -299,7 +299,7 @@ public class JobFilterServiceTest
     public void GetJobFilterDetail_FoundJobFilter()
     {
         Guid randomGuid = Guid.NewGuid();
-        _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterById(randomGuid))
+        _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterByIdAsync(randomGuid))
             .ReturnsAsync(_fixture
                 .Build<JobFilter>()
                 .With(temp => temp.MatchJobList, [])
@@ -315,7 +315,7 @@ public class JobFilterServiceTest
     [Fact]
     public async Task DeleteJobFilter_NonExistingJobFilterId()
     {
-        _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterById(Guid.NewGuid()))
+        _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterByIdAsync(Guid.NewGuid()))
             .ReturnsAsync(() => null);
         JobFilterResponseSimple res = await _jobfilterService.DeleteJobFilter(Guid.NewGuid());
         res.Id.Should().Be(Guid.Empty);
@@ -325,7 +325,7 @@ public class JobFilterServiceTest
     public async Task DeleteJobFilter_NonMatchJobFilterId()
     {
         Guid randomGuid = Guid.NewGuid();
-        _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterById(randomGuid))
+        _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterByIdAsync(randomGuid))
             .ReturnsAsync(() => null);
 
         var res = await _jobfilterService.DeleteJobFilter(randomGuid);
@@ -336,7 +336,7 @@ public class JobFilterServiceTest
     public void DeleteJobFilter_MatchJobFilterId()
     {
         Guid randomGuid = Guid.NewGuid();
-        _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterById(randomGuid))
+        _jobFilterRepositoryMock.Setup(temp => temp.FindOneJobFilterByIdAsync(randomGuid))
             .ReturnsAsync(_fixture
                 .Build<JobFilter>()
                 .With(temp => temp.MatchJobList, [])

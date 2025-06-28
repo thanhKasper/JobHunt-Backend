@@ -41,7 +41,7 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
         if (jobFilter.YearsOfExperience == null) jobFilter.FillJobLevel();
         else if (jobFilter.Level == null) jobFilter.FillYearExp();
 
-        JobFilter? newJobFilter = await _jobFilterRepo.AddJobFilter(jobFilter);
+        JobFilter? newJobFilter = await _jobFilterRepo.AddJobFilterAsync(jobFilter);
         JobFilterResponseDetail? response = newJobFilter?.ToJobFilterResponseDetail();
         return response ?? new()
         {
@@ -54,14 +54,14 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
         // The enlightment of async/await :))
         var getJobFilterTask = GetJobFilterDetail(jobFilterId);
         if (jobFilterId == null) return new JobFilterResponseSimple() { Id = Guid.Empty };
-        JobFilter? deleteJobFilter = await _jobFilterRepo.RemoveJobFilterById(jobFilterId.Value);
+        JobFilter? deleteJobFilter = await _jobFilterRepo.RemoveJobFilterByIdAsync(jobFilterId.Value);
         if (deleteJobFilter != null) return deleteJobFilter.ToJobFilterResponseSimple();
         return new JobFilterResponseSimple() { Id = Guid.Empty };
     }
 
     public async Task<List<JobFilterResponseSimple>> GetAllJobFilterSimple()
     {
-        List<JobFilter> jobFilterList = await _jobFilterRepo.GetAllJobFilters() ?? [];
+        List<JobFilter> jobFilterList = await _jobFilterRepo.GetAllJobFiltersAsync() ?? [];
         return [.. jobFilterList.Select(ele => ele.ToJobFilterResponseSimple())];
     }
 
@@ -69,7 +69,7 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
     {
         if (jobFilterId != null)
         {
-            JobFilter? foundJobFilter = await _jobFilterRepo.FindOneJobFilterById(jobFilterId.Value);
+            JobFilter? foundJobFilter = await _jobFilterRepo.FindOneJobFilterByIdAsync(jobFilterId.Value);
 
             if (foundJobFilter != null) return foundJobFilter.ToJobFilterResponseDetail();
         }

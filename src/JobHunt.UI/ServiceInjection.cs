@@ -11,6 +11,7 @@ public static class AddServiceInjection
         services.AddScoped<IJobViewService, JobViewService>();
         services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IProjectService, ProjectService>();
+        services.AddScoped<IJobFilterByUserService, JobFilterByUserService>();
         services.AddTransient<IJwtService, JwtService>();
         return services;
     }

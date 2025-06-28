@@ -1,16 +1,23 @@
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
+using JobHunt.Ui.CustomModelBinders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobHunt.UI.Controllers;
 
-public class JobFilterController(IJobFilterService jobFilterService) : ApiControllerBase
+public class JobFilterController(
+    IJobFilterService jobFilterService,
+    IJobFilterByUserService jobFilterByUserService) : ApiControllerBase
 {
     private readonly IJobFilterService _jobFilterService = jobFilterService;
+    private readonly IJobFilterByUserService _jobFilterByUserService = jobFilterByUserService;
     [HttpGet]
-    public async Task<ActionResult<List<JobFilterResponseSimple>>> Get()
+    public async Task<ActionResult<JobFilterListResponse>> GetAllJobFilters(
+        [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId
+    )
     {
-        List<JobFilterResponseSimple> jobFilterList = await _jobFilterService.GetAllJobFilterSimple();
+        var jobFilterList =
+            await _jobFilterByUserService.GetAllJobFiltersFromUser(userId);
         return jobFilterList;
     }
 
@@ -20,12 +27,6 @@ public class JobFilterController(IJobFilterService jobFilterService) : ApiContro
         JobFilterResponseDetail jobFilterDetail = await _jobFilterService.GetJobFilterDetail(jobfilterId);
         return jobFilterDetail;
     }
-
-    // [HttpPut]
-    // public async Task<IActionResult> UpdateJobFilter()
-    // {
-    //     return Ok("Receive request from PUT api/jobfilter");
-    // }
 
     [HttpPost]
     public async Task<ActionResult<JobFilterResponseDetail>> CreateNewJobFilter([FromBody] JobFilterCreationRequest jobFilter)
