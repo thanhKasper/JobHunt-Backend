@@ -57,6 +57,27 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
         return await _dbContext.JobFilters
             .Include(jf => jf.JobFilterOwner)
             .AsNoTracking()
-            .Where(jf => jf.JobFilterOwner.Id == id).ToListAsync();
+            .Where(jf => jf.JobFilterOwner.Id == id)
+            .Select(jobfilter => new JobFilter
+            {
+                CreatedAt = jobfilter.CreatedAt,
+                FilterTitle = jobfilter.FilterTitle,
+                IsActive = jobfilter.IsActive,
+                IsStarred = jobfilter.IsStarred,
+                JobFilterId = jobfilter.JobFilterId,
+                JobFilterOwner = jobfilter.JobFilterOwner,
+                Languages = jobfilter.Languages,
+                LastUpdated = jobfilter.LastUpdated,
+                Level = jobfilter.Level,
+                Location = jobfilter.Location,
+                MatchJobList = jobfilter.MatchJobList,
+                Occupation = jobfilter.Occupation,
+                SoftSkills = jobfilter.SoftSkills,
+                TechnicalKnowledge = jobfilter.TechnicalKnowledge,
+                Tools = jobfilter.Tools,
+                YearsOfExperience = jobfilter.YearsOfExperience,
+                JobsCount = (jobfilter.MatchJobList != null) ? jobfilter.MatchJobList.Count() : 0
+            })
+            .ToListAsync();
     }
 }

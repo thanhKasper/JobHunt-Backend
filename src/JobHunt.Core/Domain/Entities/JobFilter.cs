@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using JobHunt.Core.Domain.ValueObjects;
 
 namespace JobHunt.Core.Domain.Entities;
@@ -27,6 +28,8 @@ public class JobFilter
     public DateTime? CreatedAt { get; set; }
     public DateTime? LastUpdated { get; set; }
 
+    [NotMapped]
+    public int JobsCount { get; set; } = 0;
     // Navigational Property
     public List<Job>? MatchJobList { get; set; }
     public JobHunter JobFilterOwner { get; set; } = null!;

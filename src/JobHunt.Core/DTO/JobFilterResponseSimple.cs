@@ -1,5 +1,4 @@
 using JobHunt.Core.Domain.Entities;
-using JobHunt.Core.Domain.ValueObjects;
 
 namespace JobHunt.Core.DTO;
 
@@ -10,6 +9,7 @@ public class JobFilterResponseSimple
     public string? Occupation { get; set; }
     public bool? IsStarred { get; set; }
     public bool? IsActive { get; set; }
+    public int? TotalJobs { get; set; }
     public DateTime? CreatedAt { get; set; }
 }
 
@@ -24,7 +24,13 @@ public static class JobFilterConverterExtension
             Occupation = jobFilter.Occupation.ToString(),
             Title = jobFilter.FilterTitle,
             IsActive = jobFilter.IsActive,
-            IsStarred = jobFilter.IsStarred
+            IsStarred = jobFilter.IsStarred,
+            TotalJobs = jobFilter.JobsCount
         };
+    }
+
+    public static List<JobFilterResponseSimple> ToJobFilterResponseSimpleList(this IEnumerable<JobFilter> jobFilters)
+    {
+        return jobFilters.Select(jobfilter => jobfilter.ToJobFilterResponseSimple()).ToList();
     }
 }
