@@ -55,4 +55,48 @@ public class JobFilterIntegrationTest :
         res.Should().Be2XXSuccessful();
     }
     #endregion
+
+    #region CreateNewJobFilter
+    [Fact]
+    public async Task CreateNewJobFilter_EmptyJobLevelAndExpYear_ShouldReturnBadRequest()
+    {
+        await Signup();
+        string jwtToken = (await this.Signin())!.Token!;
+        _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(
+            "Bearer " + jwtToken);
+        HttpResponseMessage res = await _client
+            .PostAsJsonAsync<JobFilterCreationRequest>("api/jobfilter/",
+            new JobFilterCreationRequest
+            {
+                FilterTitle = "jjjkk",
+                IsActive = true,
+                IsStarred = false,
+                Occupation = "Information_Technology"
+            });
+
+        res.Should().Be400BadRequest();
+    }
+
+    [Fact]
+    public async Task CreateNewJobFilter_MismatchJobLevelAndYearExp_ShouldReturnBadRequest()
+    {
+        await Signup();
+        string jwtToken = (await this.Signin())!.Token!;
+        _client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(
+            "Bearer " + jwtToken);
+        HttpResponseMessage res = await _client
+            .PostAsJsonAsync<JobFilterCreationRequest>("api/jobfilter/",
+            new JobFilterCreationRequest
+            {
+                FilterTitle = "jjjkk",
+                IsActive = true,
+                IsStarred = false,
+                Occupation = "Information_Technology",
+                YearsOfExperience = 1,
+                Level = "Senior"
+            });
+
+        res.Should().Be400BadRequest();
+    }
+    #endregion
 }

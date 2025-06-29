@@ -51,7 +51,7 @@ public class JobFilterServiceTest
         // Action
         async Task testAction()
         {
-            await _jobfilterService.CreateNewJobFilterAsync(filterReq);
+            await _jobfilterService.CreateNewJobFilterAsync(filterReq, Guid.NewGuid());
         }
 
         // Assert
@@ -71,7 +71,7 @@ public class JobFilterServiceTest
         JobFilter jobFilter = req.ToJobFilter();
 
         await Assert.ThrowsAsync<ArgumentException>(
-            async () => await _jobfilterService.CreateNewJobFilterAsync(req)
+            async () => await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid())
         );
     }
 
@@ -85,7 +85,7 @@ public class JobFilterServiceTest
             .Create();
 
         await Assert.ThrowsAsync<ArgumentException>(
-            async () => await _jobfilterService.CreateNewJobFilterAsync(req)
+            async () => await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid())
         );
     }
 
@@ -99,7 +99,7 @@ public class JobFilterServiceTest
             .Create();
 
         await Assert.ThrowsAsync<ArgumentException>(
-            async () => await _jobfilterService.CreateNewJobFilterAsync(req)
+            async () => await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid())
         );
     }
 
@@ -122,7 +122,7 @@ public class JobFilterServiceTest
             temp.AddJobFilterAsync(It.IsAny<JobFilter>(), It.IsAny<JobHunter>()))
             .ReturnsAsync(jobFilter);
 
-        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilterAsync(req);
+        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid());
 
         _testOutputHelper.WriteLine("Expect:");
         _testOutputHelper.WriteLine(jobFilter.ToJobFilterResponseDetail().ToString());
@@ -153,7 +153,7 @@ public class JobFilterServiceTest
                 return Task.FromResult(jobfilter);
             });
 
-        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilterAsync(req);
+        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid());
 
         Assert.NotNull(res!.Level);
     }
@@ -178,7 +178,7 @@ public class JobFilterServiceTest
                 return Task.FromResult(jobfilter);
             });
 
-        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilterAsync(req);
+        JobFilterResponseDetail? res = await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid());
 
         Assert.NotNull(res!.Level);
     }
@@ -207,7 +207,7 @@ public class JobFilterServiceTest
                 return Task.FromResult(jobfilter);
             });
 
-        JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilterAsync(req);
+        JobFilterResponseDetail res = await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid());
         res.TechnicalKnowledge.Should().HaveCount(3);
         res.Tools.Should().HaveCount(3);
         res.Languages.Should().HaveCount(3);
@@ -225,7 +225,7 @@ public class JobFilterServiceTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            await _jobfilterService.CreateNewJobFilterAsync(req);
+            await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid());
         });
     }
 
@@ -245,7 +245,7 @@ public class JobFilterServiceTest
         _jobFilterRepositoryMock.Setup(temp => temp.AddJobFilterAsync(It.IsAny<JobFilter>(), It.IsAny<JobHunter>()))
             .ReturnsAsync(req.ToJobFilter());
 
-        var res = await _jobfilterService.CreateNewJobFilterAsync(req);
+        var res = await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid());
 
         Assert.NotNull(res);
     }
@@ -261,7 +261,7 @@ public class JobFilterServiceTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            await _jobfilterService.CreateNewJobFilterAsync(req);
+            await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid());
         });
     }
 
@@ -276,7 +276,7 @@ public class JobFilterServiceTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            await _jobfilterService.CreateNewJobFilterAsync(req);
+            await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid());
         });
     }
 
@@ -291,7 +291,7 @@ public class JobFilterServiceTest
 
         await Assert.ThrowsAsync<ArgumentException>(async () =>
         {
-            await _jobfilterService.CreateNewJobFilterAsync(req);
+            await _jobfilterService.CreateNewJobFilterAsync(req, Guid.NewGuid());
         });
     }
     #endregion
