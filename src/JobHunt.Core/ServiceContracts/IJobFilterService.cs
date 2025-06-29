@@ -34,4 +34,23 @@ public interface IJobFilterService
     /// <param name="jobFilterId">The id of the job filter that user want to remove</param>
     /// <returns>A removed job filter information, job filter with empty Guid indicating not found job filter to delete</returns>
     public Task<JobFilterResponseSimple> DeleteJobFilterAsync(Guid? jobFilterId);
+
+
+    /// <summary>
+    /// Toggle the active state of a job filter on or off
+    /// </summary>
+    /// <param name="jobFilterId">The id of the job filter user want to toggle</param>
+    /// <returns>Return true if the job filter turn to active state, false otherwise</returns>
+    /// <exception cref="ArgumentNullException">Throw if jobFilterId is null</exeception>
+    /// <exception cref="ArgumentException">Throw if job filter of the provided Id cannot be found</exception>
+    public Task<bool> ToggleJobFilterActiveStateAsync(Guid? jobFilterId);
+
+    /// <summary>
+    /// Toggle the star state of a job filter on or off
+    /// </summary>
+    /// <param name="jobFilterId">The id of the job filter user want to toggle</param>
+    /// <returns>Return true if the job filter turn to active state, false otherwise</returns>
+    /// <exception cref="ArgumentNullException">Throw if jobFilterId is null</exeception>
+    /// <exception cref="ArgumentException">Throw if job filter of the provided Id cannot be found</exception>
+    public Task<bool> ToggleJobFilterStarStateAsync(Guid? jobFilterId);
 }

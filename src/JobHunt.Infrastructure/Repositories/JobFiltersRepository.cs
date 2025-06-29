@@ -80,4 +80,20 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
             })
             .ToListAsync();
     }
+
+    public async Task<bool> ToggleJobFilterActiveStateAsync(JobFilter jobfilter)
+    {
+        bool currentActiveState = jobfilter.IsActive!.Value;
+        jobfilter.IsActive = !currentActiveState;
+        await _dbContext.SaveChangesAsync();
+        return !currentActiveState;
+    }
+
+    public async Task<bool> ToggleJobFilterStarStateAsync(JobFilter jobfilter)
+    {
+        bool currentStarState = jobfilter.IsStarred!.Value;
+        jobfilter.IsStarred = !currentStarState;
+        await _dbContext.SaveChangesAsync();
+        return !currentStarState;
+    }
 }

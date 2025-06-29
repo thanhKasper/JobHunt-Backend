@@ -96,4 +96,30 @@ public class JobFilterService(
 
         return new JobFilterResponseDetail() { Id = Guid.Empty };
     }
+
+    public async Task<bool> ToggleJobFilterActiveStateAsync(Guid? jobFilterId)
+    {
+        if (!jobFilterId.HasValue)
+            throw new ArgumentNullException(nameof(jobFilterId), "Job filter ID cannot be empty");
+
+        var jobFilter = await _jobFilterRepo.FindOneJobFilterByIdAsync(jobFilterId.Value)
+            ?? throw new ArgumentException("Cannot find job filter of this id", nameof(jobFilterId));
+
+        bool result = await _jobFilterRepo.ToggleJobFilterActiveStateAsync(jobFilter);
+
+        return result;
+    }
+
+    public async Task<bool> ToggleJobFilterStarStateAsync(Guid? jobFilterId)
+    {
+        if (!jobFilterId.HasValue)
+            throw new ArgumentNullException(nameof(jobFilterId), "Job filter ID cannot be empty");
+
+        var jobFilter = await _jobFilterRepo.FindOneJobFilterByIdAsync(jobFilterId.Value)
+            ?? throw new ArgumentException("Cannot find job filter of this id", nameof(jobFilterId));
+
+        bool result = await _jobFilterRepo.ToggleJobFilterStarStateAsync(jobFilter);
+
+        return result;
+    }
 }

@@ -11,4 +11,6 @@ public interface IJobFilterRepository
     public Task<int> GetTotalJobFiltersOfUserAsync(Guid id);
     public Task<int> GetTotalActiveJobFiltersOfUserAsync(Guid id);
     public Task<List<JobFilter>> GetAllJobFiltersOfUserAsync(Guid id);
+    public Task<bool> ToggleJobFilterActiveStateAsync(JobFilter jobfilter);
+    public Task<bool> ToggleJobFilterStarStateAsync(JobFilter jobfilter);
 }

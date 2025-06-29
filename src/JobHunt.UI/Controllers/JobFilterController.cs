@@ -38,7 +38,7 @@ public class JobFilterController(
         [FromBody] JobFilterCreationRequest jobFilter)
     {
         _logger.LogInformation("POST - Create New Job Filter");
-        
+
         if (!userId.HasValue) return BadRequest("UserId is not defined");
 
         JobFilterResponseDetail jobFilterAdded =
@@ -51,5 +51,21 @@ public class JobFilterController(
     {
         JobFilterResponseSimple jobFilterDelete = await _jobFilterService.DeleteJobFilterAsync(jobFilterId);
         return jobFilterDelete;
+    }
+
+    [HttpPut("active/{jobfilterId}")]
+    public async Task<ActionResult<bool>> ToggleJobFilterActiveState(Guid? jobFilterId)
+    {
+        if (!jobFilterId.HasValue) return BadRequest("Empty job filter id");
+        bool result = await _jobFilterService.ToggleJobFilterActiveStateAsync(jobFilterId);
+        return result;
+    }
+
+    [HttpPut("star/{jobfilterId}")]
+    public async Task<ActionResult<bool>> ToggleJobFilterStar(Guid? jobFilterId)
+    {
+        if (!jobFilterId.HasValue) return BadRequest("Empty job filter id");
+        bool result = await _jobFilterService.ToggleJobFilterActiveStateAsync(jobFilterId);
+        return result;
     }
 }
