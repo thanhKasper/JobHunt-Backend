@@ -79,30 +79,39 @@ public class AccountController(
     [HttpPost("revoke-token")]
     public async Task<IActionResult> RevokeToken([FromBody] TokenModel tokenModel)
     {
-        var claimsPrinciple = _jwtService.GetPrincipalsFromJWT(tokenModel.AccessToken);
-        if (claimsPrinciple is null) return BadRequest("Invalid jwt token");
-        string? userId = claimsPrinciple.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        if (userId is null) return BadRequest("Invalid jwt format");
-
-        var user = await _userManager.FindByIdAsync(userId);
-
-        if (user is null ||
-            (user.RefreshTokenExpirationDateTime ?? DateTime.UtcNow)
-            .ToUniversalTime() < DateTime.UtcNow ||
-            user.RefreshToken != tokenModel.RefreshToken)
+        try
         {
-            return BadRequest("Expired Token, please sign in again");
+
+            var claimsPrinciple = _jwtService.GetPrincipalsFromJWT(tokenModel.AccessToken);
+            if (claimsPrinciple is null) return BadRequest("Invalid jwt token");
+            string? userId = claimsPrinciple.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId is null) return BadRequest("Invalid jwt format");
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user is null ||
+                (user.RefreshTokenExpirationDateTime ?? DateTime.UtcNow)
+                .ToUniversalTime() < DateTime.UtcNow ||
+                user.RefreshToken != tokenModel.RefreshToken)
+            {
+                return BadRequest("Expired Token, please sign in again");
+            }
+            else
+            {
+
+                AuthenticationResponse newToken = _jwtService.GenerateToken(user);
+
+                user.RefreshToken = newToken.RefreshToken;
+                user.RefreshTokenExpirationDateTime = newToken.RefreshTokenExpiration;
+                await _userManager.UpdateAsync(user);
+                return Ok(newToken);
+
+            }
         }
-        else
+        catch
         {
-            AuthenticationResponse newToken = _jwtService.GenerateToken(user);
-
-            user.RefreshToken = newToken.RefreshToken;
-            user.RefreshTokenExpirationDateTime = newToken.RefreshTokenExpiration;
-            await _userManager.UpdateAsync(user);
-            return Ok(newToken);
+            return BadRequest("Invalid Token Format. Please Check Again");
         }
-
     }
 }

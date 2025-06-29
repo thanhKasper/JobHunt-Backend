@@ -4,7 +4,6 @@ using System.Security.Cryptography;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
@@ -89,6 +88,7 @@ public class JwtService(IConfiguration configuration) : IJwtService
             ValidateLifetime = false
         };
         JwtSecurityTokenHandler jwtHandler = new();
+
         ClaimsPrincipal claimsPrincipal =
             jwtHandler.ValidateToken(token, tokenValidation, out SecurityToken secKey);
 
@@ -98,7 +98,8 @@ public class JwtService(IConfiguration configuration) : IJwtService
         {
             throw new SecurityTokenException("Invalid Token");
         }
-
         return claimsPrincipal;
+
+
     }
 }
