@@ -7,7 +7,7 @@ namespace JobHunt.Core.DTO;
 
 public class JobFilterCreationRequest : IValidatableObject
 {
-    [Required]
+    [Required(ErrorMessage = "This field is required")]
     public string? FilterTitle { get; set; }
 
     public bool? IsActive { get; set; }
@@ -44,7 +44,7 @@ public class JobFilterCreationRequest : IValidatableObject
         }
 
 
-        if (Level != null && YearsOfExperience != null)
+        if (!String.IsNullOrEmpty(Level) && YearsOfExperience != null)
         {
             if ((Level.Equals("INTERN", StringComparison.CurrentCultureIgnoreCase) ||
                 Level.Equals("FRESHER", StringComparison.CurrentCultureIgnoreCase)) &&
@@ -61,7 +61,7 @@ public class JobFilterCreationRequest : IValidatableObject
             {
                 yield return new ValidationResult(
                     $"Junior level should have experience between 1 and 3 inclusively",
-                    [nameof(YearsOfExperience)]    
+                    [nameof(YearsOfExperience)]
                 );
             }
             else if (
@@ -81,7 +81,7 @@ public class JobFilterCreationRequest : IValidatableObject
             {
                 yield return new ValidationResult(
                     $"{Level} cannot have experience less than 5 years",
-                    [nameof(YearsOfExperience)]    
+                    [nameof(YearsOfExperience)]
                 );
             }
         }

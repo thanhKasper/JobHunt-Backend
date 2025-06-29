@@ -81,7 +81,6 @@ public class AccountController(
     {
         try
         {
-
             var claimsPrinciple = _jwtService.GetPrincipalsFromJWT(tokenModel.AccessToken);
             if (claimsPrinciple is null) return BadRequest("Invalid jwt token");
             string? userId = claimsPrinciple.FindFirstValue(ClaimTypes.NameIdentifier);
