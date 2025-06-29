@@ -8,8 +8,6 @@ namespace JobHunt.Core.DTO;
 public class JobFilterCreationRequest : IValidatableObject
 {
     [Required]
-    public Guid? UserId { get; set; }
-    [Required]
     public string? FilterTitle { get; set; }
 
     public bool? IsActive { get; set; }
@@ -37,7 +35,7 @@ public class JobFilterCreationRequest : IValidatableObject
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (Level == null && !YearsOfExperience.HasValue)
+        if (String.IsNullOrEmpty(Level) && !YearsOfExperience.HasValue)
         {
             yield return new ValidationResult(
                 $"{nameof(Level)} and {nameof(YearsOfExperience)} cannot be both empty",
@@ -53,7 +51,8 @@ public class JobFilterCreationRequest : IValidatableObject
                 YearsOfExperience >= 1)
             {
                 yield return new ValidationResult(
-                    $"{Level} cannot have experience greater or equal to 1"
+                    $"{Level} cannot have experience greater or equal to 1",
+                    [nameof(YearsOfExperience)]
                 );
             }
             else if (
@@ -61,14 +60,18 @@ public class JobFilterCreationRequest : IValidatableObject
                 (YearsOfExperience > 3 || YearsOfExperience < 1))
             {
                 yield return new ValidationResult(
-                    $"Junior level should have experience between 1 and 3 inclusively");
+                    $"Junior level should have experience between 1 and 3 inclusively",
+                    [nameof(YearsOfExperience)]    
+                );
             }
             else if (
                 Level.Equals("MIDDLE", StringComparison.CurrentCultureIgnoreCase) &&
                 (YearsOfExperience > 5 || YearsOfExperience <= 3))
             {
                 yield return new ValidationResult(
-                    $"Middle level should have experience more than 3 years until 5 years");
+                    $"Middle level should have experience more than 3 years until 5 years",
+                    [nameof(YearsOfExperience)]
+                );
             }
             else if (
                 !Level.Equals("JUNIOR", StringComparison.CurrentCultureIgnoreCase) &&
@@ -77,7 +80,9 @@ public class JobFilterCreationRequest : IValidatableObject
                 YearsOfExperience < 5)
             {
                 yield return new ValidationResult(
-                    $"{Level} cannot have experienc less than 5 years");
+                    $"{Level} cannot have experience less than 5 years",
+                    [nameof(YearsOfExperience)]    
+                );
             }
         }
     }

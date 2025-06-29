@@ -9,7 +9,7 @@ public interface IJobFilterService
     /// </summary>
     /// <param name="jobFilterRequest">List of fields related to the job for filtering</param>
     /// <returns>A simple JobFilter</returns>
-    public Task<JobFilterResponseDetail> CreateNewJobFilterAsync(JobFilterCreationRequest? jobFilterRequest);
+    public Task<JobFilterResponseDetail> CreateNewJobFilterAsync(JobFilterCreationRequest? jobFilterRequest, Guid? userId);
 
 
     /// <summary>

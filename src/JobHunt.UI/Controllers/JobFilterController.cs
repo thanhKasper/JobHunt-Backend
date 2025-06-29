@@ -7,16 +7,18 @@ namespace JobHunt.UI.Controllers;
 
 public class JobFilterController(
     IJobFilterService jobFilterService,
-    IJobFilterByUserService jobFilterByUserService) : ApiControllerBase
+    IJobFilterByUserService jobFilterByUserService,
+    ILogger<JobFilterController> logger) : ApiControllerBase
 {
     private readonly IJobFilterService _jobFilterService = jobFilterService;
     private readonly IJobFilterByUserService _jobFilterByUserService = jobFilterByUserService;
-    
+    private readonly ILogger<JobFilterController> _logger = logger;
     [HttpGet]
     public async Task<ActionResult<JobFilterListResponse>> GetAllJobFilters(
         [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId
     )
     {
+        _logger.LogInformation("GET - get all job filters from user with id: " + userId);
         if (!userId.HasValue) return BadRequest("UserId is not provided");
         var jobFilterList =
             await _jobFilterByUserService.GetAllJobFiltersFromUserAsync(userId);
@@ -35,10 +37,12 @@ public class JobFilterController(
         [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId,
         [FromBody] JobFilterCreationRequest jobFilter)
     {
+        _logger.LogInformation("POST - Create New Job Filter");
+        
         if (!userId.HasValue) return BadRequest("UserId is not defined");
-        else if (userId.Value != jobFilter.UserId) return BadRequest("Invalid creation request");
+
         JobFilterResponseDetail jobFilterAdded =
-            await _jobFilterService.CreateNewJobFilterAsync(jobFilter);
+            await _jobFilterService.CreateNewJobFilterAsync(jobFilter, userId);
         return jobFilterAdded;
     }
 

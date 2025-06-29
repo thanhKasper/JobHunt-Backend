@@ -15,7 +15,7 @@ public class JobFilterService(
 {
     private readonly IJobFilterRepository _jobFilterRepo = jobFilterRepo;
     private readonly UserManager<JobHunter> _userManager = userManager;
-    public async Task<JobFilterResponseDetail> CreateNewJobFilterAsync(JobFilterCreationRequest? jobFilterRequest)
+    public async Task<JobFilterResponseDetail> CreateNewJobFilterAsync(JobFilterCreationRequest? jobFilterRequest, Guid? userId)
     {
         // Handle when jobFilterRequest is null
         ArgumentNullException.ThrowIfNull(jobFilterRequest);
@@ -30,14 +30,14 @@ public class JobFilterService(
         }
 
         // Handling case when userid field inside DTO is empty
-        if (!jobFilterRequest.UserId.HasValue)
+        if (!userId.HasValue)
         {
             throw new ArgumentNullException(nameof(jobFilterRequest), "UserId is required");
         }
 
         // Throws exception when UserId not exists.
         var foundUser =
-            await _userManager.FindByIdAsync(jobFilterRequest.UserId.Value.ToString()) ??
+            await _userManager.FindByIdAsync(userId.Value.ToString()) ??
             throw new ArgumentException(
                 "Cannot find a user with that id", nameof(jobFilterRequest));
 
