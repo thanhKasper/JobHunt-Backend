@@ -14,10 +14,8 @@ public class JwtService(IConfiguration configuration) : IJwtService
     private readonly IConfiguration _configuration = configuration;
     public AuthenticationResponse GenerateToken(JobHunter user)
     {
-        // DateTime expirationTime =
-        //     DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:Expiration_Minutes"));
-
-        DateTime expirationTime = DateTime.UtcNow.AddMilliseconds(100);
+        DateTime expirationTime =
+            DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:Expiration_Minutes"));
 
         string issuer = _configuration.GetValue<string>("Jwt:Issuer", "");
         string audience = _configuration.GetValue<string>("Jwt:Audience", "");

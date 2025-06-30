@@ -12,10 +12,7 @@ public class JobFilterResponseDetail : JobFilterResponseSimple
     public List<string>? SoftSkills { get; set; }
     public List<string>? Languages { get; set; }
     public string? WorkingLocation { get; set; }
-
-    // These will be updated when Job Service is created
-    // public int? TotalJobMatch { get; set; }
-    // public List<JobResponse>? JobList { get; set; }
+    public int AverageCompatibility { get; set; }
 
     public override string ToString()
     {
@@ -65,7 +62,9 @@ public static class JobFilterResponseExtension
             IsActive = jobFilter.IsActive,
             IsStarred = jobFilter.IsStarred,
             YearsOfExperience = jobFilter.YearsOfExperience,
-            WorkingLocation = jobFilter.Location
+            WorkingLocation = jobFilter.Location,
+            TotalJobs = jobFilter.JobsCount,
+            AverageCompatibility = jobFilter.AverageCompatibility,
         };
     }
 }

@@ -10,7 +10,27 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
     private readonly ApplicationDbContext _dbContext = dbContext;
     public async Task<JobFilter?> FindOneJobFilterByIdAsync(Guid id)
     {
-        return await _dbContext.JobFilters.FindAsync(id);
+        return await _dbContext.JobFilters.Where(jf => jf.JobFilterId == id).Select(
+            jobfilter => new JobFilter()
+            {
+                CreatedAt = jobfilter.CreatedAt,
+                FilterTitle = jobfilter.FilterTitle,
+                IsActive = jobfilter.IsActive,
+                IsStarred = jobfilter.IsStarred,
+                JobFilterId = jobfilter.JobFilterId,
+                JobFilterOwner = jobfilter.JobFilterOwner,
+                Languages = jobfilter.Languages,
+                LastUpdated = jobfilter.LastUpdated,
+                Level = jobfilter.Level,
+                Location = jobfilter.Location,
+                MatchJobList = jobfilter.MatchJobList,
+                Occupation = jobfilter.Occupation,
+                SoftSkills = jobfilter.SoftSkills,
+                TechnicalKnowledge = jobfilter.TechnicalKnowledge,
+                Tools = jobfilter.Tools,
+                YearsOfExperience = jobfilter.YearsOfExperience,
+                JobsCount = (jobfilter.MatchJobList != null) ? jobfilter.MatchJobList.Count() : 0
+            }).FirstAsync();
     }
 
     public async Task<List<JobFilter>?> GetAllJobFiltersAsync()

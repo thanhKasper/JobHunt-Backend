@@ -30,6 +30,9 @@ public class JobFilter
 
     [NotMapped]
     public int JobsCount { get; set; } = 0;
+
+    [DefaultValue(0)]
+    public int AverageCompatibility { get; set; } = 0;
     // Navigational Property
     public List<Job>? MatchJobList { get; set; }
     public JobHunter JobFilterOwner { get; set; } = null!;

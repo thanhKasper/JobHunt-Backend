@@ -90,7 +90,6 @@ public class AccountController(
     [HttpPost("revoke-token")]
     public async Task<IActionResult> RevokeToken([FromBody] TokenModel tokenModel)
     {
-        _logger.LogInformation("JOBHUNT - Calling RevokeToken Action Method");
         try
         {
             var claimsPrinciple = _jwtService.GetPrincipalsFromJWT(tokenModel.AccessToken);
