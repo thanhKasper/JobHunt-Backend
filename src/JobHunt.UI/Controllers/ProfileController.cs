@@ -42,6 +42,7 @@ public class ProfileController : ApiControllerBase
     public async Task<ActionResult<ProfileSimpleResponse>> GetSimpleProfile(
         [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId)
     {
+        _logger.LogInformation("JOBHUNT - Calling GetSimpleProifle action method");
         if (!userId.HasValue) return BadRequest("UserId cannot be empty!");
         var user = await _userManager.FindByIdAsync(userId.Value.ToString());
         if (user is null) return BadRequest("No user found.");

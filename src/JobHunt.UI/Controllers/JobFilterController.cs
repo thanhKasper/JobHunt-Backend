@@ -18,7 +18,7 @@ public class JobFilterController(
         [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId
     )
     {
-        _logger.LogInformation("GET - get all job filters from user with id: " + userId);
+        _logger.LogInformation("JOBHUNT - Calling GetAllJobFilters method");
         if (!userId.HasValue) return BadRequest("UserId is not provided");
         var jobFilterList =
             await _jobFilterByUserService.GetAllJobFiltersFromUserAsync(userId);
@@ -37,7 +37,7 @@ public class JobFilterController(
         [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId,
         [FromBody] JobFilterCreationRequest jobFilter)
     {
-        _logger.LogInformation("POST - Create New Job Filter");
+        _logger.LogInformation("JOBHUNT - Create New Job Filter");
 
         if (!userId.HasValue) return BadRequest("UserId is not defined");
 
@@ -65,7 +65,7 @@ public class JobFilterController(
     public async Task<ActionResult<bool>> ToggleJobFilterStar(Guid? jobFilterId)
     {
         if (!jobFilterId.HasValue) return BadRequest("Empty job filter id");
-        bool result = await _jobFilterService.ToggleJobFilterActiveStateAsync(jobFilterId);
+        bool result = await _jobFilterService.ToggleJobFilterStarStateAsync(jobFilterId);
         return result;
     }
 }

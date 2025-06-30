@@ -58,6 +58,8 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
             .Include(jf => jf.JobFilterOwner)
             .AsNoTracking()
             .Where(jf => jf.JobFilterOwner.Id == id)
+            .OrderByDescending(jf => jf.IsStarred)
+            .ThenByDescending(jf => jf.IsActive)
             .Select(jobfilter => new JobFilter
             {
                 CreatedAt = jobfilter.CreatedAt,

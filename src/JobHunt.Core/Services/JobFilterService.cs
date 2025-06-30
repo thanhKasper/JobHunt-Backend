@@ -117,7 +117,7 @@ public class JobFilterService(
 
         var jobFilter = await _jobFilterRepo.FindOneJobFilterByIdAsync(jobFilterId.Value)
             ?? throw new ArgumentException("Cannot find job filter of this id", nameof(jobFilterId));
-
+        if (!jobFilter.IsActive!.Value) await _jobFilterRepo.ToggleJobFilterActiveStateAsync(jobFilter);
         bool result = await _jobFilterRepo.ToggleJobFilterStarStateAsync(jobFilter);
 
         return result;
