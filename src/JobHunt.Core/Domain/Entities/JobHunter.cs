@@ -17,7 +17,7 @@ public class JobHunter : IdentityUser<Guid>
     public DateTime? DateOfBirth { get; set; }
     [MaxLength(512)]
     public string? AboutMe { get; set; }
-    [MaxLength(64)]
+    [MaxLength(128)]
     public string? Address { get; set; }
     [Required]
     public Education Education { get; set; } = ValueObjects.Education.None;

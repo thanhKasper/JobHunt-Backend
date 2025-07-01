@@ -23,17 +23,20 @@ public class ProfileController : ApiControllerBase
         _userManager = userManager;
     }
 
-    [HttpGet("{userId}")]
-    public async Task<ActionResult<ProfileResponse>> Index(Guid userId)
+    [HttpGet]
+    public async Task<ActionResult<ProfileResponse>> Index(
+        [ModelBinder(BinderType = typeof(UserIdBinder))] Guid userId)
     {
         var profile = await _profileService.GetProfileAsync(userId);
-
         return profile;
     }
 
-    [HttpPut("{userId}")]
-    public async Task<ActionResult<ProfileResponse>> Update(Guid userId, [FromBody] ProfileRequest profileRequest)
+    [HttpPut]
+    public async Task<ActionResult<ProfileResponse>> Update(
+        [ModelBinder(BinderType = typeof(UserIdBinder))] Guid userId,
+        [FromBody] ProfileRequest profileRequest)
     {
+        profileRequest.JobFinderId = userId;
         var updatedProfile = await _profileService.UpdateProfileAsync(profileRequest);
         return updatedProfile;
     }

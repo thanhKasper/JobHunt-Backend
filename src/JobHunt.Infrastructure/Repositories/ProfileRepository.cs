@@ -15,8 +15,20 @@ public class ProfileRepository(ApplicationDbContext dbContext) : IProfileReposit
 
     public async Task<JobHunter> UpdateProfileAsync(JobHunter jobHunter)
     {
-        _dbContext.JobHunters.Update(jobHunter);
+        JobHunter user = await _dbContext.JobHunters.FindAsync(jobHunter.Id)
+            ?? throw new ArgumentException($"Profile with ID {jobHunter.Id} not found.");
+        user.AboutMe = jobHunter.AboutMe;
+        user.FullName = jobHunter.FullName;
+        user.WorkingEmail = jobHunter.WorkingEmail;
+        user.DateOfBirth = jobHunter.DateOfBirth;
+        user.Address = jobHunter.Address;
+        user.Education = jobHunter.Education;
+        user.University = jobHunter.University;
+        user.Major = jobHunter.Major;
+        user.PhoneNumber = jobHunter.PhoneNumber;
+        user.Awards = jobHunter.Awards;
+        _dbContext.JobHunters.Update(user);
         await _dbContext.SaveChangesAsync();
-        return jobHunter;
+        return user;
     }
 }
