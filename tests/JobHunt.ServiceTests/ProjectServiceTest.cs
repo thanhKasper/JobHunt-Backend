@@ -7,6 +7,7 @@ using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
 using JobHunt.Core.Services;
+using Microsoft.AspNetCore.Identity;
 using Moq;
 
 namespace JobHunt.ServiceTests;
@@ -17,17 +18,39 @@ public class ProjectServiceTest
     private readonly IProjectService _projectService;
     private readonly Mock<IProfileRepository> _profileRepositoryMock;
     private readonly IFixture _fixture;
-
+    private readonly Mock<UserManager<JobHunter>> _userManagerMock;
     public ProjectServiceTest()
     {
         _projectRepositoryMock = new Mock<IProjectRepository>();
         _profileRepositoryMock = new Mock<IProfileRepository>();
+        var mockUserStore = new Mock<IUserStore<JobHunter>>();
+        _userManagerMock = new Mock<UserManager<JobHunter>>(
+            mockUserStore.Object,
+            null!, // IOptions<IdentityOptions>
+            null!, // IPasswordHasher<JobHunter>
+            null!, // IEnumerable<IUserValidator<JobHunter>>
+            null!, // IEnumerable<IPasswordValidator<JobHunter>>
+            null!, // ILookupNormalizer
+            null!, // IdentityErrorDescriber
+            null!, // IServiceProvider
+            null!  // ILogger<UserManager<JobHunter>>
+        );
         _projectService = new ProjectService(
             _projectRepositoryMock.Object,
-            _profileRepositoryMock.Object
+            _profileRepositoryMock.Object,
+            _userManagerMock.Object
         );
 
         _fixture = new Fixture();
+        _fixture.Behaviors.OfType<ThrowingRecursionBehavior>()
+               .ToList()
+               .ForEach(b => _fixture.Behaviors.Remove(b));
+
+        _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+        _fixture.Customize<JobHunter>(
+            c => c
+            .Without(user => user.Projects)
+            .Without(user => user.JobFilters));
     }
 
     #region CreateProjectAsync
@@ -35,7 +58,8 @@ public class ProjectServiceTest
     public async Task CreateProjectAsync_CreateNewProject_ShouldBeSuccessfull()
     {
         var projectOwner = _fixture.Build<JobHunter>()
-            .With(po => po.Projects, [])
+            // .With(po => po.Projects, [])
+            // .With(po => po.JobFilters, [])
             .Create();
 
         var projectRequest = _fixture
@@ -494,6 +518,51 @@ public class ProjectServiceTest
         result.Count.Should().Be(projects.Count);
     }
 
+    #endregion
+
+    #region GetGeneralProjectInfoFromUserAsync
+    [Fact]
+    public async Task GetGeneralProjectInfoFromUserAsync_EmptyUserId_ShouldThrowArgumentNullException()
+    {
+        var actualAction = async () => await _projectService.GetGeneralProjectInfoFromUserAsync(null);
+        await actualAction.Should().ThrowAsync<ArgumentNullException>();
+    }
+
+    [Fact]
+    public async Task GetGeneralProjectInfoFromUserAsync_NotFoundUserId_ShouldThrowArgumentException()
+    {
+        _userManagerMock.Setup(mockService => mockService.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(() => null);
+
+        var actualAction =
+            async () => await _projectService.GetGeneralProjectInfoFromUserAsync(Guid.NewGuid());
+        await actualAction.Should().ThrowAsync<ArgumentException>();
+    }
+
+    [Fact]
+    public async Task GetGeneralProjectInfoFromUserAsync_SuccessfulGetResult_ShouldReturnResult()
+    {
+        _userManagerMock.Setup(mockService => mockService.FindByIdAsync(It.IsAny<string>()))
+            .ReturnsAsync(_fixture.Create<JobHunter>());
+
+        _projectRepositoryMock.Setup(mockRepo => mockRepo.ProjectsCountAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(5);
+
+        _projectRepositoryMock.Setup(mockRepo => mockRepo.FinishedProjectsCountAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(3);
+
+        _projectRepositoryMock.Setup(mockRepo => mockRepo.TechnologyUsedInProjectsCountAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(10);
+
+        _projectRepositoryMock.Setup(mockRepo => mockRepo.RoleActedInProjectsCountAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(2);
+
+        _projectRepositoryMock.Setup(mockRepo => mockRepo.TopFiveMostUsedTechnologyAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(["React", "Typescript", "ASP.NET Core"]);
+
+        var actual = await _projectService.GetGeneralProjectInfoFromUserAsync(Guid.NewGuid());
+        actual.Should().NotBeNull();
+    }
     #endregion
 }
 

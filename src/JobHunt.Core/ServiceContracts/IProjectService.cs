@@ -19,4 +19,13 @@ public interface IProjectService
     // Delete operations
     Task<ProjectResponse> DeleteProjectAsync(Guid? projectId);
     Task<List<ProjectResponse>> DeleteMultipleProjectsAsync(IEnumerable<Guid?>? projectIds);
+
+    /// <summary>
+    /// Get the general information about the list of projects uploaded by the user.
+    /// </summary>
+    /// <param name="userId">user id that project general info belongs to</param>
+    /// <returns>The general information gathered from the list of project</returns>
+    /// <exception cref="ArgumentNullException">Throw null userId is null</exception>
+    /// <exception cref="ArgumentException">Throw if cannot found user with that userId</exception>
+    Task<ProjectGeneralInfoResponse> GetGeneralProjectInfoFromUserAsync(Guid? userId);
 }

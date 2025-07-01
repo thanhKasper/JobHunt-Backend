@@ -86,7 +86,7 @@ public class ProfileServiceTest
             .With(pr => pr.WorkingEmail, "jane.doe@example.com")
             .With(pr => pr.PhoneNumber, "123-456-7890")
             .With(pr => pr.Education, "BachelorDegree")
-            .With(pr => pr.Major, "ComputerScience")
+            .With(pr => pr.Major, "Computer_Science")
             .Create();
 
         JobHunter jobHunterProfile = profileRequest.ToJobHunter();

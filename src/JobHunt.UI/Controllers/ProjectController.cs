@@ -1,5 +1,6 @@
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
+using JobHunt.Ui.CustomModelBinders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobHunt.UI.Controllers;
@@ -30,6 +31,13 @@ public class ProjectController : ApiControllerBase
         var projects = await _projectService.FilterProjectsAsync(userId, searchTerm, technologiesOrSkills);
         return Ok(projects);
     }
+    
+    [HttpGet("general-info")]
+    public async Task<ActionResult<ProjectGeneralInfoResponse>> GetUserGeneralProjectsInformation(
+        [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId)
+    {
+        return await _projectService.GetGeneralProjectInfoFromUserAsync(userId);
+    }
 
     [HttpPut("{projectId}")]
     public async Task<ActionResult<ProjectResponse>> Update(Guid projectId, [FromBody] ProjectRequest projectRequest)
@@ -44,4 +52,5 @@ public class ProjectController : ApiControllerBase
         var deletedProjects = await _projectService.DeleteMultipleProjectsAsync(projectIds);
         return deletedProjects;
     }
+
 }

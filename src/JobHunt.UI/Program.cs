@@ -83,6 +83,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }
+
+app.UseHttpLogging();
 app.UseRouting();
 app.UseCors();
 app.UseAuthentication();

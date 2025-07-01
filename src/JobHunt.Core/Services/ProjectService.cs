@@ -3,15 +3,18 @@ using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
+using Microsoft.AspNetCore.Identity;
 
 namespace JobHunt.Core.Services;
 
 public class ProjectService(
     IProjectRepository projectRepository,
-    IProfileRepository profileRepository) : IProjectService
+    IProfileRepository profileRepository,
+    UserManager<JobHunter> userManager) : IProjectService
 {
     private readonly IProjectRepository _projectRepository = projectRepository;
     private readonly IProfileRepository _profileRepository = profileRepository;
+    private readonly UserManager<JobHunter> _userManager = userManager;
 
     public async Task<ProjectResponse> CreateProjectAsync(Guid? userId, ProjectRequest? request)
     {
@@ -30,6 +33,8 @@ public class ProjectService(
         }
 
         Project newProject = request.ToProject();
+
+        // This was done before i learn about Microsoft Identity
         JobHunter? projectOwner = await _profileRepository.GetProfileAsync(userId.Value)
             ?? throw new ArgumentException($"User with ID {userId} not found.");
 
@@ -87,6 +92,29 @@ public class ProjectService(
                 technologiesOrSkills ?? new List<string>());
 
         return matchProjects.ToProjectResponseSummaryList();
+    }
+
+    public async Task<ProjectGeneralInfoResponse> GetGeneralProjectInfoFromUserAsync(Guid? userId)
+    {
+        if (!userId.HasValue) throw new ArgumentNullException(nameof(userId), "userId cannot be empty");
+
+        var user = await _userManager.FindByIdAsync(userId.Value.ToString())
+            ?? throw new ArgumentException("User cannot be found");
+
+        int projectCount = await _projectRepository.ProjectsCountAsync(user.Id);
+        int completedProjectCount = await _projectRepository.FinishedProjectsCountAsync(user.Id);
+        int techUsedCount = await _projectRepository.TechnologyUsedInProjectsCountAsync(user.Id);
+        int roleJoinedCount = await _projectRepository.RoleActedInProjectsCountAsync(user.Id);
+        List<string> topUsedTech = await _projectRepository.TopFiveMostUsedTechnologyAsync(user.Id);
+
+        return new ProjectGeneralInfoResponse()
+        {
+            MostUsedTech = topUsedTech,
+            TotalCompleteProjects = completedProjectCount,
+            TotalProjects = projectCount,
+            TotalRoles = roleJoinedCount,
+            TotalUsedTools = techUsedCount,
+        };
     }
 
     public async Task<ProjectResponse> GetProjectByIdAsync(Guid? projectId)
