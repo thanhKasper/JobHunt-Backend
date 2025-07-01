@@ -1,5 +1,6 @@
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
+using JobHunt.Ui.CustomModelBinders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace JobHunt.UI.Controllers;
@@ -15,20 +16,39 @@ public class ProjectController : ApiControllerBase
         _logger = logger;
     }
 
-    [HttpGet("{userId}/{projectId}")]
-    public async Task<ActionResult<ProjectResponse>> Index(Guid userId, Guid projectId)
+    [HttpGet("{projectId}")]
+    public async Task<ActionResult<ProjectResponse>> GetProject(Guid projectId)
     {
         var project = await _projectService.GetProjectByIdAsync(projectId);
 
         return project;
     }
 
-    [HttpGet("{userId}")]
-    public async Task<ActionResult<IEnumerable<ProjectResponse>>> GetAllWithFilter(
-        Guid userId, [FromQuery] string? searchTerm, [FromQuery] List<string>? technologiesOrSkills)
+    [HttpGet]
+    public async Task<ActionResult<List<ProjectResponse>>> GetAllWithFilter(
+        [ModelBinder(BinderType = typeof(UserIdBinder))] Guid userId,
+        [FromQuery] string? searchTerm,
+        [FromQuery] List<string>? technologiesOrSkills)
     {
         var projects = await _projectService.FilterProjectsAsync(userId, searchTerm, technologiesOrSkills);
-        return Ok(projects);
+        return projects;
+    }
+
+    [HttpGet("general-info")]
+    public async Task<ActionResult<ProjectGeneralInfoResponse>> GetUserGeneralProjectsInformation(
+        [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId)
+    {
+        return await _projectService.GetGeneralProjectInfoFromUserAsync(userId);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ProjectResponse>> Create(
+        [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId,
+        [FromBody] ProjectRequest project
+    )
+    {
+        var newProject = await _projectService.CreateProjectAsync(userId, project);
+        return newProject;
     }
 
     [HttpPut("{projectId}")]
@@ -43,5 +63,13 @@ public class ProjectController : ApiControllerBase
     {
         var deletedProjects = await _projectService.DeleteMultipleProjectsAsync(projectIds);
         return deletedProjects;
+    }
+
+    [HttpDelete("{projectId}")]
+    public async Task<ActionResult<ProjectResponse>> DeleteOneProject(
+        Guid? projectId)
+    {
+        var deletedProject = await _projectService.DeleteProjectAsync(projectId);
+        return deletedProject;
     }
 }

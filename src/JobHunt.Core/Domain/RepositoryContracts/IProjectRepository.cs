@@ -16,5 +16,10 @@ public interface IProjectRepository
 
     // Delete operations
     Task<Project?> DeleteAsync(Guid projectId);
+    Task<int> ProjectsCountAsync(Guid userId);
+    Task<int> FinishedProjectsCountAsync(Guid userId);
+    Task<int> TechnologyUsedInProjectsCountAsync(Guid userId);
+    Task<int> RoleActedInProjectsCountAsync(Guid userId);
+    Task<List<string>> TopFiveMostUsedTechnologyAsync(Guid userId);
 
 }

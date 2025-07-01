@@ -21,7 +21,8 @@ public class Project
     public List<string>? Features { get; set; }
     [MaxLength(500)]
     public string? ProjectLink { get; set; }
-
+    [MaxLength(500)]
+    public string? DemoLink { get; set; }
     // Navigation property
     public JobHunter ProjectOwner { get; set; } = null!;
 }

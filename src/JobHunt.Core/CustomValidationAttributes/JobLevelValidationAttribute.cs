@@ -9,6 +9,7 @@ public class JobLevelValidationAttribute : ValidationAttribute
         if (value != null)
         {
             string checkedJobLevel = (string)value;
+            if (checkedJobLevel.Length == 0) return ValidationResult.Success; 
             if (!Enum.TryParse((string)value, true, out JobLevel jobLevel))
             {
                 return new ValidationResult(ErrorMessage ?? $"Fail to convert \"{(string)value}\" to valid value");

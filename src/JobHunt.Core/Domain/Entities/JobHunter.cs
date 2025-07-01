@@ -7,9 +7,7 @@ namespace JobHunt.Core.Domain.Entities;
 public class JobHunter : IdentityUser<Guid>
 {
     // Token related fields
-    [Required]
     public string? RefreshToken { get; set; } = string.Empty;
-    [Required]
     public DateTime? RefreshTokenExpirationDateTime { get; set; }
 
     // Business information
@@ -19,7 +17,7 @@ public class JobHunter : IdentityUser<Guid>
     public DateTime? DateOfBirth { get; set; }
     [MaxLength(512)]
     public string? AboutMe { get; set; }
-    [MaxLength(64)]
+    [MaxLength(128)]
     public string? Address { get; set; }
     [Required]
     public Education Education { get; set; } = ValueObjects.Education.None;
@@ -34,4 +32,5 @@ public class JobHunter : IdentityUser<Guid>
 
     // Navigational Property
     public List<Project>? Projects { get; set; }
+    public List<JobFilter> JobFilters { get; set; } = [];
 }

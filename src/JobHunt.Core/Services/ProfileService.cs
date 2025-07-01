@@ -17,11 +17,8 @@ public class ProfileService(IProfileRepository profileRepository) : IProfileServ
             throw new ArgumentException("Job hunter ID cannot be null.");
         }
 
-        var jobHunter = await _profileRepository.GetProfileAsync(jobHunterId.Value);
-        if (jobHunter == null)
-        {
-            throw new ArgumentException($"Profile with ID {jobHunterId} not found.");
-        }
+        var jobHunter = await _profileRepository.GetProfileAsync(jobHunterId.Value)
+         ?? throw new ArgumentException($"Profile with ID {jobHunterId} not found.");
 
         return jobHunter.ToProfileResponse();
     }

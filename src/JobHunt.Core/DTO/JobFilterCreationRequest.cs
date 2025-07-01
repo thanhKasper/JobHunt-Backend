@@ -7,8 +7,11 @@ namespace JobHunt.Core.DTO;
 
 public class JobFilterCreationRequest : IValidatableObject
 {
-    [Required]
+    [Required(ErrorMessage = "This field is required")]
     public string? FilterTitle { get; set; }
+
+    public bool? IsActive { get; set; }
+    public bool? IsStarred { get; set; }
 
     [Required(ErrorMessage = "{0} cannot be empty")]
     [JobFieldValidation]
@@ -32,7 +35,7 @@ public class JobFilterCreationRequest : IValidatableObject
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (Level == null && !YearsOfExperience.HasValue)
+        if (String.IsNullOrEmpty(Level) && !YearsOfExperience.HasValue)
         {
             yield return new ValidationResult(
                 $"{nameof(Level)} and {nameof(YearsOfExperience)} cannot be both empty",
@@ -41,25 +44,45 @@ public class JobFilterCreationRequest : IValidatableObject
         }
 
 
-        if (Level != null && YearsOfExperience != null)
+        if (!String.IsNullOrEmpty(Level) && YearsOfExperience != null)
         {
-            if ((Level.ToUpper() == "INTERN" || Level.ToUpper() == "FRESHER") && YearsOfExperience >= 1)
+            if ((Level.Equals("INTERN", StringComparison.CurrentCultureIgnoreCase) ||
+                Level.Equals("FRESHER", StringComparison.CurrentCultureIgnoreCase)) &&
+                YearsOfExperience >= 1)
             {
                 yield return new ValidationResult(
-                    $"{Level} cannot have experience greater or equal to {YearsOfExperience}"
+                    $"{Level} cannot have experience greater or equal to 1",
+                    [nameof(YearsOfExperience)]
                 );
             }
-            else if (Level.ToUpper() == "JUNIOR" && (YearsOfExperience > 3 || YearsOfExperience < 1))
+            else if (
+                Level.Equals("JUNIOR", StringComparison.CurrentCultureIgnoreCase) &&
+                (YearsOfExperience > 3 || YearsOfExperience < 1))
             {
-                yield return new ValidationResult($"Junior level should have experience between 1 and 3 inclusively");
+                yield return new ValidationResult(
+                    $"Junior level should have experience between 1 and 3 inclusively",
+                    [nameof(YearsOfExperience)]
+                );
             }
-            else if (Level.ToUpper() == "MIDDLE" && (YearsOfExperience > 5 || YearsOfExperience <= 3))
+            else if (
+                Level.Equals("MIDDLE", StringComparison.CurrentCultureIgnoreCase) &&
+                (YearsOfExperience > 5 || YearsOfExperience <= 3))
             {
-                yield return new ValidationResult($"Middle level should have experience more than 3 years until 5 years");
+                yield return new ValidationResult(
+                    $"Middle level should have experience more than 3 years until 5 years",
+                    [nameof(YearsOfExperience)]
+                );
             }
-            else if (Level.ToUpper() != "JUNIOR" && Level.ToUpper() != "INTERN" && Level.ToUpper() != "FRESHER" && YearsOfExperience < 5)
+            else if (
+                !Level.Equals("JUNIOR", StringComparison.CurrentCultureIgnoreCase) &&
+                !Level.Equals("INTERN", StringComparison.CurrentCultureIgnoreCase) &&
+                !Level.Equals("FRESHER", StringComparison.CurrentCultureIgnoreCase) &&
+                YearsOfExperience < 5)
             {
-                yield return new ValidationResult($"{Level} cannot have experienc less than 5 years");
+                yield return new ValidationResult(
+                    $"{Level} cannot have experience less than 5 years",
+                    [nameof(YearsOfExperience)]
+                );
             }
         }
     }
@@ -79,7 +102,10 @@ public class JobFilterCreationRequest : IValidatableObject
             TechnicalKnowledge = TechnicalKnowledge,
             Tools = Tools,
             YearsOfExperience = YearsOfExperience,
+            IsActive = IsActive,
+            IsStarred = IsStarred,
             Location = WorkingLocation,
+            Languages = Languages
         };
     }
 }

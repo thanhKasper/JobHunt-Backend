@@ -14,6 +14,7 @@ public class ProjectResponse
     public List<string>? TechnologiesOrSkills { get; set; }
     public List<string>? Features { get; set; }
     public string? ProjectLink { get; set; }
+    public string? DemoLink { get; set; }
 
     public override bool Equals(object? obj)
     {
@@ -31,7 +32,8 @@ public class ProjectResponse
             Utils.CompareArrayOfString(Features, other.Features) &&
             Utils.CompareArrayOfString(TechnologiesOrSkills, other.TechnologiesOrSkills) &&
             Utils.CompareArrayOfString(Roles, other.Roles) &&
-            ProjectLink == other.ProjectLink;
+            ProjectLink == other.ProjectLink &&
+            DemoLink == other.DemoLink;
     }
 
     // override object.GetHashCode
@@ -49,13 +51,19 @@ public static class ProjectResponseExtension
         {
             Description = project.Description,
             EndDate = project.EndDate,
-            Features = project.Features,
+            Features = project.Features ?? [],
             ProjectId = project.ProjectId,
             ProjectLink = project.ProjectLink,
             ProjectTitle = project.ProjectTitle,
-            Roles = project.Roles,
+            Roles = project.Roles ?? [],
             StartDate = project.StartDate,
-            TechnologiesOrSkills = project.TechnologiesOrSkills,
+            TechnologiesOrSkills = project.TechnologiesOrSkills ?? [],
+            DemoLink = project.DemoLink
         };
+    }
+
+    public static List<ProjectResponse> ToProjectResponseList(this IEnumerable<Project> projectList)
+    {
+        return projectList.Select(project => project.ToProjectResponse()).ToList();
     }
 }

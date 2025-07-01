@@ -5,13 +5,17 @@ using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.Helpers;
 using JobHunt.Core.ServiceContracts;
+using Microsoft.AspNetCore.Identity;
 
 namespace JobHunt.Core.Services;
 
-public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterService
+public class JobFilterService(
+    IJobFilterRepository jobFilterRepo,
+    UserManager<JobHunter> userManager) : IJobFilterService
 {
     private readonly IJobFilterRepository _jobFilterRepo = jobFilterRepo;
-    public async Task<JobFilterResponseDetail> CreateNewJobFilter(JobFilterCreationRequest? jobFilterRequest)
+    private readonly UserManager<JobHunter> _userManager = userManager;
+    public async Task<JobFilterResponseDetail> CreateNewJobFilterAsync(JobFilterCreationRequest? jobFilterRequest, Guid? userId)
     {
         // Handle when jobFilterRequest is null
         ArgumentNullException.ThrowIfNull(jobFilterRequest);
@@ -25,7 +29,17 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
             throw new ArgumentException(errorList.FirstOrDefault()?.ErrorMessage);
         }
 
-        // Check if type mismatch between JobLevel and Years of Experience
+        // Handling case when userid field inside DTO is empty
+        if (!userId.HasValue)
+        {
+            throw new ArgumentNullException(nameof(jobFilterRequest), "UserId is required");
+        }
+
+        // Throws exception when UserId not exists.
+        var foundUser =
+            await _userManager.FindByIdAsync(userId.Value.ToString()) ??
+            throw new ArgumentException(
+                "Cannot find a user with that id", nameof(jobFilterRequest));
 
 
         // Remove duplication
@@ -34,14 +48,20 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
         jobFilterRequest.SoftSkills = Utils.RemoveKeywordDuplication(jobFilterRequest.SoftSkills);
         jobFilterRequest.TechnicalKnowledge = Utils.RemoveKeywordDuplication(jobFilterRequest.TechnicalKnowledge);
 
+        // Default assign IsStarred & IsActive
+        jobFilterRequest.IsActive = true;
+        jobFilterRequest.IsStarred = false;
+
+        // Assign user to that jobFilterRequest
+
 
         JobFilter jobFilter = jobFilterRequest.ToJobFilter();
 
         // Fill empty YearsOfExperience and Level
-        if (jobFilter.YearsOfExperience == null) jobFilter.FillJobLevel();
-        else if (jobFilter.Level == null) jobFilter.FillYearExp();
+        if (jobFilter.YearsOfExperience == null) jobFilter.FillYearExp();
+        else if (jobFilter.Level == null) jobFilter.FillJobLevel();
 
-        JobFilter? newJobFilter = await _jobFilterRepo.AddJobFilter(jobFilter);
+        JobFilter? newJobFilter = await _jobFilterRepo.AddJobFilterAsync(jobFilter, foundUser);
         JobFilterResponseDetail? response = newJobFilter?.ToJobFilterResponseDetail();
         return response ?? new()
         {
@@ -49,31 +69,57 @@ public class JobFilterService(IJobFilterRepository jobFilterRepo) : IJobFilterSe
         };
     }
 
-    public async Task<JobFilterResponseSimple> DeleteJobFilter(Guid? jobFilterId)
+    public async Task<JobFilterResponseSimple> DeleteJobFilterAsync(Guid? jobFilterId)
     {
         // The enlightment of async/await :))
-        var getJobFilterTask = GetJobFilterDetail(jobFilterId);
+        var getJobFilterTask = await GetJobFilterDetailAsync(jobFilterId);
         if (jobFilterId == null) return new JobFilterResponseSimple() { Id = Guid.Empty };
-        JobFilter? deleteJobFilter = await _jobFilterRepo.RemoveJobFilterById(jobFilterId.Value);
+        JobFilter? deleteJobFilter = await _jobFilterRepo.RemoveJobFilterByIdAsync(jobFilterId.Value);
         if (deleteJobFilter != null) return deleteJobFilter.ToJobFilterResponseSimple();
         return new JobFilterResponseSimple() { Id = Guid.Empty };
     }
 
-    public async Task<List<JobFilterResponseSimple>> GetAllJobFilterSimple()
+    public async Task<List<JobFilterResponseSimple>> GetAllJobFilterSimpleAsync()
     {
-        List<JobFilter> jobFilterList = await _jobFilterRepo.GetAllJobFilters() ?? [];
+        List<JobFilter> jobFilterList = await _jobFilterRepo.GetAllJobFiltersAsync() ?? [];
         return [.. jobFilterList.Select(ele => ele.ToJobFilterResponseSimple())];
     }
 
-    public async Task<JobFilterResponseDetail> GetJobFilterDetail(Guid? jobFilterId)
+    public async Task<JobFilterResponseDetail> GetJobFilterDetailAsync(Guid? jobFilterId)
     {
         if (jobFilterId != null)
         {
-            JobFilter? foundJobFilter = await _jobFilterRepo.FindOneJobFilterById(jobFilterId.Value);
+            JobFilter? foundJobFilter = await _jobFilterRepo.FindOneJobFilterByIdAsync(jobFilterId.Value);
 
             if (foundJobFilter != null) return foundJobFilter.ToJobFilterResponseDetail();
         }
 
         return new JobFilterResponseDetail() { Id = Guid.Empty };
+    }
+
+    public async Task<bool> ToggleJobFilterActiveStateAsync(Guid? jobFilterId)
+    {
+        if (!jobFilterId.HasValue)
+            throw new ArgumentNullException(nameof(jobFilterId), "Job filter ID cannot be empty");
+
+        var jobFilter = await _jobFilterRepo.FindOneJobFilterByIdAsync(jobFilterId.Value)
+            ?? throw new ArgumentException("Cannot find job filter of this id", nameof(jobFilterId));
+
+        bool result = await _jobFilterRepo.ToggleJobFilterActiveStateAsync(jobFilter);
+
+        return result;
+    }
+
+    public async Task<bool> ToggleJobFilterStarStateAsync(Guid? jobFilterId)
+    {
+        if (!jobFilterId.HasValue)
+            throw new ArgumentNullException(nameof(jobFilterId), "Job filter ID cannot be empty");
+
+        var jobFilter = await _jobFilterRepo.FindOneJobFilterByIdAsync(jobFilterId.Value)
+            ?? throw new ArgumentException("Cannot find job filter of this id", nameof(jobFilterId));
+        if (!jobFilter.IsActive!.Value) await _jobFilterRepo.ToggleJobFilterActiveStateAsync(jobFilter);
+        bool result = await _jobFilterRepo.ToggleJobFilterStarStateAsync(jobFilter);
+
+        return result;
     }
 }
