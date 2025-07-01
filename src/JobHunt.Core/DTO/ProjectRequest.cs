@@ -28,6 +28,10 @@ public class ProjectRequest : IValidatableObject
     [MaxLength(500, ErrorMessage = "Link cannot exceed 500 characters")]
     public string? ProjectLink { get; set; }
 
+    [Url(ErrorMessage = "Please enter a valid URL")]
+    [MaxLength(500, ErrorMessage = "Link cannot exceed 500 characters")]
+    public string? DemoLink { get; set; }
+
     // Custom validation to ensure EndDate is after StartDate
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
@@ -51,6 +55,7 @@ public class ProjectRequest : IValidatableObject
             ProjectLink = ProjectLink,
             StartDate = StartDate,
             TechnologiesOrSkills = TechnologiesOrSkills,
+            DemoLink = DemoLink
         };
     }
 }

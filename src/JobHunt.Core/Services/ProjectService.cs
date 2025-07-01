@@ -78,7 +78,7 @@ public class ProjectService(
         return res.ToProjectResponse();
     }
 
-    public async Task<List<ProjectResponseSummary>> FilterProjectsAsync(Guid? userId, string? searchTerm, List<string>? technologiesOrSkills)
+    public async Task<List<ProjectResponse>> FilterProjectsAsync(Guid? userId, string? searchTerm, List<string>? technologiesOrSkills)
     {
         if (!userId.HasValue)
         {
@@ -91,7 +91,7 @@ public class ProjectService(
                 searchTerm ?? "",
                 technologiesOrSkills ?? new List<string>());
 
-        return matchProjects.ToProjectResponseSummaryList();
+        return matchProjects.ToProjectResponseList();
     }
 
     public async Task<ProjectGeneralInfoResponse> GetGeneralProjectInfoFromUserAsync(Guid? userId)

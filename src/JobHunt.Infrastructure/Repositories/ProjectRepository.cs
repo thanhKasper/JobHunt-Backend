@@ -38,12 +38,18 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
 
     public async Task<List<Project>> GetAllProjectsWithFilterAsync(Guid userId, string searchTerm, List<string> technologiesOrSkills)
     {
-        return await _dbContext.Projects
+        List<Project> projects = await _dbContext.Projects
             .Include(p => p.ProjectOwner)
             .Where(p => p.ProjectOwner.Id == userId &&
-                        p.ProjectTitle!.Contains(searchTerm) &&
-                        (p.TechnologiesOrSkills ?? new List<string>()).Any(t => technologiesOrSkills.Contains(t)))
+                        p.ProjectTitle!.Contains(searchTerm))
             .ToListAsync();
+
+        if (technologiesOrSkills.Count == 0) return projects;
+
+        return projects.Where(
+                    project =>
+                        (project.TechnologiesOrSkills ?? []).ToHashSet()
+                        .Intersect(technologiesOrSkills.ToHashSet()).Any()).ToList();
     }
 
     public async Task<Project?> GetByIdAsync(Guid projectId)
@@ -96,13 +102,13 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
             .Where(p => p.ProjectOwner.Id == userId)
             .ToListAsync();
 
-        List<string> roles = res
-            .Where(p => p.Roles != null)
-            .SelectMany(p => p.Roles!)
+        List<string> techs = res
+            .Where(p => p.TechnologiesOrSkills != null)
+            .SelectMany(p => p.TechnologiesOrSkills!)
             .Distinct().ToList();
 
         Dictionary<string, int> frequentTech = [];
-        foreach (var tech in roles)
+        foreach (var tech in techs)
         {
             if (frequentTech.ContainsKey(tech)) frequentTech[tech] += 1;
             else frequentTech[tech] = 1;
@@ -127,7 +133,7 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
                 break;
             }
         }
-        
+
         return finalResult;
     }
 

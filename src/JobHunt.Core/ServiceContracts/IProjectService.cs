@@ -11,7 +11,7 @@ public interface IProjectService
     Task<ProjectResponse> GetProjectByIdAsync(Guid? projectId);
 
     // Search and filter operations
-    Task<List<ProjectResponseSummary>> FilterProjectsAsync(Guid? userId, string? searchTerm, List<string>? technologiesOrSkills);
+    Task<List<ProjectResponse>> FilterProjectsAsync(Guid? userId, string? searchTerm, List<string>? technologiesOrSkills);
 
     // Update operations
     Task<ProjectResponse> UpdateProjectAsync(Guid? projectId, ProjectRequest? request);

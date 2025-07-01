@@ -1,7 +1,5 @@
-using System.Drawing;
 using AutoFixture;
 using FluentAssertions;
-using FluentAssertions.Specialized;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
