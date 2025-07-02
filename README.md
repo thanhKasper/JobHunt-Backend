@@ -1,16 +1,28 @@
 # JobHunt
-## A automatically job searching and applying system using AI
-During the process of searching for a job, it may be very tedious to scrolling through a list of jobs from multiple recruitment channels (vietnamwork, ybox, topdev, topcv, itviec, etc.) with the hope of finding out few jobs that match job hunters' desire. Therefore, this project is created with the expectation of providing jobs that not only provide the jobs that the job hunters want, but also jobs that suit with their capability. The system contains these features:  
 
-* Customize the list of potential jobs base on job requirement provided by job hunters.
-* Ability to automatically apply for jobs from the list of recommended jobs.
-* Generate CV that matches the job requirement using AI.
-* Analye job whether it matches both job requirement from employers as well as job hunter ability using AI.
-* Provide friendly UI on web for accessibility.
-* Maintaining user's projects (will be used for analying job).
-* Maintaining user's profile (will be used for job analysis).
+## Description
+A smart toolset for job seekers that helps **find suitable jobs**, apply with **tailored CVs**, and allow job seeker to **research companies** before applying. This project uses React as Frontend and ASP.NET Core as Backend. However, if users want to implement their own **AI Job Analysis System**, **CV Generation AI System** and **Job Crawling System**, any programming languages are welcomed as long as it follow the set of protocols.
 
-## Installation Guide
-To be updated
-## Further Development
-To be updated
+## Features
+The system will support these features:
+- **Smart Job Filtering**: Automatically filter and recommend jobs based on the job seeker's preferences, skills, and requirements by aggregating data from multiple recruitment channels.
+
+- **Candidate–Job Matching**: Analyze a job seeker's profile and project portfolio to assess compatibility with job listings using intelligent matching algorithms.
+
+- **CV Generation**: Generate a tailored, professional CV for the job seeker based on their provided information, including education, experience, and projects.
+
+- **Company Insights**: Provide curated resources and background information about the company a job seeker is applying to — including culture, recent news, and reviews — to support interview preparation.
+
+## How to use it
+Unfortunately, this project is still underdevelopment, therefore, there is no available server for the user to directly experience it. Users have to create their own server by following these steps:
+
+- Frontend: Please following the link [Github Source to Frontend](https://github.com/thanhKasper/JobHunt-React) for more detail.
+
+- Backend:
+```bash
+git clone
+cd JobHunt-Backend
+dotnet build
+dotnet run --project src/JobHunt.UI
+```
+
