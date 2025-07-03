@@ -15,6 +15,10 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
             .Where(jf => jf.JobFilterId == id)
             .Include(jf => jf.Level)
             .Include(jf => jf.Occupation)
+            .Include(jf => jf.SpecializedKnowledges)
+            .Include(jf => jf.Tools)
+            .Include(jf => jf.SoftSkills)
+            .Include(jf => jf.Languages)
             .AsSplitQuery() // Avoid Cartesian Explosion
             .AsNoTracking()
             .Select(
@@ -33,7 +37,7 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
                     MatchJobList = jobfilter.MatchJobList,
                     Occupation = jobfilter.Occupation,
                     SoftSkills = jobfilter.SoftSkills,
-                    TechnicalKnowledge = jobfilter.TechnicalKnowledge,
+                    SpecializedKnowledges = jobfilter.SpecializedKnowledges,
                     Tools = jobfilter.Tools,
                     YearsOfExperience = jobfilter.YearsOfExperience,
                     JobsCount = (jobfilter.MatchJobList != null)
@@ -115,7 +119,7 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
                 MatchJobList = jobfilter.MatchJobList,
                 Occupation = jobfilter.Occupation,
                 SoftSkills = jobfilter.SoftSkills,
-                TechnicalKnowledge = jobfilter.TechnicalKnowledge,
+                SpecializedKnowledges = jobfilter.SpecializedKnowledges,
                 Tools = jobfilter.Tools,
                 YearsOfExperience = jobfilter.YearsOfExperience,
                 JobsCount = (jobfilter.MatchJobList != null) ? jobfilter.MatchJobList.Count() : 0

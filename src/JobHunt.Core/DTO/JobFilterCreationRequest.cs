@@ -32,7 +32,7 @@ public class JobFilterCreationRequest : IValidatableObject
     public List<string>? SoftSkills { get; set; }
 
     public List<string>? Languages { get; set; }
-    
+
     [Required(ErrorMessage = "{0} field is required")]
     public string? WorkingLocation { get; set; }
 
@@ -96,14 +96,32 @@ public class JobFilterCreationRequest : IValidatableObject
             Occupation = Enum.TryParse(Occupation, true, out JobFieldKey jobField)
                 ? new JobField { JobFieldId = jobField }
                 : new JobField { JobFieldId = null },
-            SoftSkills = SoftSkills,
-            TechnicalKnowledge = TechnicalKnowledge,
-            Tools = Tools,
+            SoftSkills = SoftSkills?
+                .Select(e => new SoftSkill()
+                {
+                    SoftSkillName = e,
+                }).ToList() ?? [],
+            SpecializedKnowledges = TechnicalKnowledge?
+                .Select(e => new SpecializedKnowledge()
+                {
+                    Knowledge = e
+                })
+                .ToList() ?? [],
+            Tools = Tools?
+                .Select(e => new Tool()
+                {
+                    ToolName = e
+                })
+                .ToList() ?? [],
             YearsOfExperience = YearsOfExperience,
             IsActive = IsActive,
             IsStarred = IsStarred,
             Location = WorkingLocation,
-            Languages = Languages
+            Languages = Languages?
+                .Select(lang => new Language()
+                {
+                    CommunicationLanguage = lang
+                }).ToList() ?? [],
         };
     }
 }

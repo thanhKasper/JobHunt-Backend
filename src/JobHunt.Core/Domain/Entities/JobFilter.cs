@@ -18,10 +18,6 @@ public class JobFilter
     public string? FilterTitle { get; set; }
     public string? Location { get; set; }
     public int? YearsOfExperience { get; set; }
-    public List<string>? TechnicalKnowledge { get; set; }
-    public List<string>? SoftSkills { get; set; }
-    public List<string>? Tools { get; set; }
-    public List<string>? Languages { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? LastUpdated { get; set; }
 
@@ -40,6 +36,13 @@ public class JobFilter
     public JobLevel Level { get; set; } = null!; // Required one-to-many relationship
     public List<Job>? MatchJobList { get; set; }
     public JobHunter JobFilterOwner { get; set; } = null!;
+    public List<SpecializedKnowledge> SpecializedKnowledges { get; set; } = [];
+    public List<Language> Languages { get; set; } = [];
+    public List<Tool> Tools { get; set; } = [];
+    public List<SoftSkill> SoftSkills { get; set; } = [];
+
+
+    #region Business Logic Core
 
     public void FillYearExp()
     {
@@ -61,4 +64,5 @@ public class JobFilter
             _ => new JobLevel { JobLevelId = JobLevelKey.Senior },
         };
     }
+    #endregion
 }

@@ -23,19 +23,7 @@ public class ApplicationDbContext(DbContextOptions options) :
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        // Model builder for JobFilter
-        modelBuilder.Entity<JobFilter>()
-            .Property(table => table.Languages)
-            .HasStringArrayToStringConversion();
-        modelBuilder.Entity<JobFilter>()
-            .Property(table => table.SoftSkills)
-            .HasStringArrayToStringConversion();
-        modelBuilder.Entity<JobFilter>()
-            .Property(table => table.TechnicalKnowledge)
-            .HasStringArrayToStringConversion();
-        modelBuilder.Entity<JobFilter>()
-            .Property(table => table.Tools)
-            .HasStringArrayToStringConversion();
+        
         // Model builder for Job
         modelBuilder.Entity<Job>().Property(table => table.MatchingRequirements)
             .HasStringArrayToStringConversion();
