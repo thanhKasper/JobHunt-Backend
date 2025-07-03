@@ -22,17 +22,17 @@ public class ProfileRequest : IValidatableObject
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (!Enum.TryParse<Education>(Education, true, out var educationValue))
+        if (!Enum.TryParse<EducationKey>(Education, true, out var educationValue))
         {
             yield return new ValidationResult("Invalid education level.", [nameof(Education)]);
         }
 
-        if (!Enum.TryParse<Major>(Major, true, out var majorValue))
+        if (!Enum.TryParse<MajorKey>(Major, true, out var majorValue))
         {
             yield return new ValidationResult("Invalid major.", [nameof(Major)]);
         }
     }
-    
+
     public JobHunter ToJobHunter()
     {
         return new JobHunter
@@ -43,16 +43,16 @@ public class ProfileRequest : IValidatableObject
             AboutMe = AboutMe,
             WorkingEmail = WorkingEmail,
             Address = Address,
-            Education = Enum.TryParse<Education>(Education, true, out var education) ?
-                education :
-                JobHunt.Core.Domain.ValueObjects.Education.None,
+            Education = Enum.TryParse<EducationKey>(Education, true, out var education) ?
+                new Education { EducationId = education } :
+                new Education { EducationId = EducationKey.None },
             University = University,
-            Major = Enum.TryParse<Major>(Major, true, out var major) ?
-                major :
-                JobHunt.Core.Domain.ValueObjects.Major.None,
+            Major = Enum.TryParse<MajorKey>(Major, true, out var major) ?
+                new Major { MajorId = major } :
+                new Major { MajorId = MajorKey.None },
             PhoneNumber = PhoneNumber,
             Awards = Awards
-            
+
         };
     }
 }

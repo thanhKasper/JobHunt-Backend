@@ -36,7 +36,8 @@ public class JobFilter
     // Navigational Property
     [Required]
     public JobField Occupation { get; set; } = null!; // Required one-to-many relationship
-    public JobLevel? Level { get; set; } // Optional one-to-many relationship
+    [Required]
+    public JobLevel Level { get; set; } = null!; // Required one-to-many relationship
     public List<Job>? MatchJobList { get; set; }
     public JobHunter JobFilterOwner { get; set; } = null!;
 

@@ -52,9 +52,6 @@ public class JobFilterService(
         jobFilterRequest.IsActive = true;
         jobFilterRequest.IsStarred = false;
 
-        // Assign user to that jobFilterRequest
-
-
         JobFilter jobFilter = jobFilterRequest.ToJobFilter();
 
         // Fill empty YearsOfExperience and Level
