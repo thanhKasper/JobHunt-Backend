@@ -1,6 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+using JobHunt.Core.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+
 namespace JobHunt.Core.Domain.ValueObjects;
 
-public enum JobField
+public enum JobFieldKey
 {
     // Engineering & Technology
     Information_Technology,
@@ -129,4 +133,16 @@ public enum JobField
     Insurance,
     Investment_Analysis,
     Asset_Management
+}
+
+public class JobField
+{
+    [Key]
+    public JobFieldKey? JobFieldId { get; set; }
+
+    [Required]
+    [MaxLength(64)]
+    public string? VietNameseName { get; set; }
+
+    public List<JobFilter> JobFilters { get; set; } = [];
 }
