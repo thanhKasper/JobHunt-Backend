@@ -1,5 +1,5 @@
 using JobHunt.Core.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
+using JobHunt.Core.Domain.ValueObjects;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -15,6 +15,10 @@ public class ApplicationDbContext(DbContextOptions options) :
     public virtual DbSet<Company> Companies { get; set; }
     public virtual DbSet<JobHunter> JobHunters { get; set; }
     public virtual DbSet<Project> Projects { get; set; }
+    public virtual DbSet<JobField> JobFields { get; set; }
+    public virtual DbSet<JobLevel> JobLevels { get; set; }
+    public virtual DbSet<Major> Majors { get; set; }
+    public virtual DbSet<Education> Educations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -47,6 +51,11 @@ public class ApplicationDbContext(DbContextOptions options) :
         // Model builder for Profile entity
         modelBuilder.Entity<JobHunter>().Property(entity => entity.Awards)
             .HasStringArrayToStringConversion();
+
+        new JobFieldEntityTypeConfiguration().Configure(modelBuilder.Entity<JobField>());
+        new JobLevelEntityTypeConfiguration().Configure(modelBuilder.Entity<JobLevel>());
+        new MajorEntityTypeConfiguration().Configure(modelBuilder.Entity<Major>());
+        new EducationEntityTypeConfiguration().Configure(modelBuilder.Entity<Education>());
     }
 }
 
