@@ -29,12 +29,6 @@ public class ApplicationDbContext(DbContextOptions options) :
             .HasStringArrayToStringConversion();
 
         // Model builder for Projects entity
-        modelBuilder.Entity<Project>().Property(entity => entity.TechnologiesOrSkills)
-            .HasStringArrayToStringConversion();
-        modelBuilder.Entity<Project>().Property(entity => entity.Features)
-            .HasStringArrayToStringConversion();
-        modelBuilder.Entity<Project>().Property(entity => entity.Roles)
-            .HasStringArrayToStringConversion();
 
         // Model builder for Profile entity
         modelBuilder.Entity<JobHunter>().Property(entity => entity.Awards)

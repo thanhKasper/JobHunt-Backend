@@ -149,18 +149,8 @@ public class ProjectService(
         Project? existingProject = await _projectRepository.GetByIdAsync(projectId.Value)
             ?? throw new ArgumentException($"Project with ID {projectId} not found.");
 
-        // The updating data
-        existingProject.ProjectTitle = request.ProjectTitle;
-        existingProject.Description = request.Description;
-        existingProject.ProjectLink = request.ProjectLink;
-        existingProject.StartDate = request.StartDate;
-        existingProject.EndDate = request.EndDate;
-        existingProject.TechnologiesOrSkills = request.TechnologiesOrSkills;
-        existingProject.Roles = request.Roles;
-        existingProject.Features = request.Features;
-        existingProject.ProjectLink = request.ProjectLink;
-
-        Project updatedProject = await _projectRepository.UpdateAsync(existingProject);
+        Project updatedProject = await _projectRepository
+            .UpdateAsync(existingProject, request.ToProject());
         return updatedProject.ToProjectResponse();
     }
 }

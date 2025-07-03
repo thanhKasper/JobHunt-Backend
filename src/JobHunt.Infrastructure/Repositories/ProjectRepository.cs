@@ -1,5 +1,6 @@
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
+using JobHunt.Core.Domain.ValueObjects;
 using JobHunt.Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 
@@ -39,7 +40,11 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
     public async Task<List<Project>> GetAllProjectsWithFilterAsync(Guid userId, string searchTerm, List<string> technologiesOrSkills)
     {
         List<Project> projects = await _dbContext.Projects
+            .AsNoTracking()
             .Include(p => p.ProjectOwner)
+            .Include(p => p.TechnologiesOrSkills)
+            .Include(p => p.Roles)
+            .AsSplitQuery()
             .Where(p => p.ProjectOwner.Id == userId &&
                         p.ProjectTitle!.Contains(searchTerm))
             .ToListAsync();
@@ -48,7 +53,8 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
 
         return projects.Where(
                     project =>
-                        (project.TechnologiesOrSkills ?? []).ToHashSet()
+                        (project.TechnologiesOrSkills.Select(tech => tech.TechOrSkill) ?? [])
+                        .ToHashSet()
                         .Intersect(technologiesOrSkills.ToHashSet()).Any()).ToList();
     }
 
@@ -56,6 +62,10 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
     {
         return await _dbContext.Projects
             .AsNoTracking()
+            .Include(p => p.TechnologiesOrSkills)
+            .Include(p => p.Features)
+            .Include(p => p.Roles)
+            .AsSplitQuery()
             .FirstOrDefaultAsync(p => p.ProjectId == projectId);
     }
 
@@ -104,7 +114,7 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
 
         List<string> techs = res
             .Where(p => p.TechnologiesOrSkills != null)
-            .SelectMany(p => p.TechnologiesOrSkills!)
+            .SelectMany(p => p.TechnologiesOrSkills.Select(tech => tech.TechOrSkill!))
             .Distinct().ToList();
 
         Dictionary<string, int> frequentTech = [];
@@ -133,14 +143,37 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
                 break;
             }
         }
-
         return finalResult;
     }
 
-    public async Task<Project> UpdateAsync(Project project)
+    public async Task<Project> UpdateAsync(Project oldProject, Project newProject)
     {
-        _dbContext.Projects.Update(project);
+        oldProject.ProjectLink = newProject.ProjectLink;
+        oldProject.ProjectTitle = newProject.ProjectTitle;
+        oldProject.StartDate = newProject.StartDate;
+        oldProject.EndDate = newProject.EndDate;
+        oldProject.Description = newProject.Description;
+        oldProject.DemoLink = newProject.DemoLink;
+        // Clear the old one and add a new list of result
+
+        _dbContext.RemoveRange(
+            oldProject.TechnologiesOrSkills
+            .Where(tech => tech.Project.ProjectId == oldProject.ProjectId));
+
+        oldProject.TechnologiesOrSkills.AddRange(newProject.TechnologiesOrSkills);
+
+        _dbContext.RemoveRange(
+            oldProject.Features
+            .Where(feature => feature.Project.ProjectId == oldProject.ProjectId));
+        oldProject.Features.AddRange(newProject.Features);
+
+        _dbContext.RemoveRange(
+            oldProject.Roles
+            .Where(role => role.Project.ProjectId == oldProject.ProjectId));
+        oldProject.Roles.AddRange(newProject.Roles);
+
+        _dbContext.Projects.Update(oldProject);
         await _dbContext.SaveChangesAsync();
-        return project;
+        return oldProject;
     }
 }

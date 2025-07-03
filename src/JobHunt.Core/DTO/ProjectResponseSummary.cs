@@ -27,8 +27,8 @@ public static class ProjectResponseSummaryExtension
             ProjectTitle = project.ProjectTitle,
             StartDate = project.StartDate,
             EndDate = project.EndDate,
-            Roles = project.Roles,
-            TechnologiesOrSkills = project.TechnologiesOrSkills,
+            Roles = project.Roles.Select(role => role.ProjectOwnerRole!).ToList(),
+            TechnologiesOrSkills = project.TechnologiesOrSkills.Select(tech => tech.TechOrSkill!).ToList(),
             ProjectLink = project.ProjectLink,
             ProjectDescription = project.Description
         };

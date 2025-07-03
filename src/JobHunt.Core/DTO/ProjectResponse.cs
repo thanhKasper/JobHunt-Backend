@@ -51,13 +51,13 @@ public static class ProjectResponseExtension
         {
             Description = project.Description,
             EndDate = project.EndDate,
-            Features = project.Features ?? [],
+            Features = project.Features.Select(feat => feat.Feature!).ToList(),
             ProjectId = project.ProjectId,
             ProjectLink = project.ProjectLink,
             ProjectTitle = project.ProjectTitle,
-            Roles = project.Roles ?? [],
+            Roles = project.Roles.Select(role => role.ProjectOwnerRole!).ToList(),
             StartDate = project.StartDate,
-            TechnologiesOrSkills = project.TechnologiesOrSkills ?? [],
+            TechnologiesOrSkills = project.TechnologiesOrSkills.Select(tech => tech.TechOrSkill!).ToList(),
             DemoLink = project.DemoLink
         };
     }
