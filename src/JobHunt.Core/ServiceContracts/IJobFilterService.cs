@@ -53,4 +53,16 @@ public interface IJobFilterService
     /// <exception cref="ArgumentNullException">Throw if jobFilterId is null</exeception>
     /// <exception cref="ArgumentException">Throw if job filter of the provided Id cannot be found</exception>
     public Task<bool> ToggleJobFilterStarStateAsync(Guid? jobFilterId);
+
+    /// <summary>
+    /// Get all job fields available in the system
+    /// </summary>
+    /// <returns> A list of job fields for user to select </returns>
+    public Task<List<JobFieldsDTO>> GetAllJobFieldsAsync();
+
+    /// <summary>
+    /// Get all job levels available in the system
+    /// </summary>
+    /// <returns> A list of job levels for user to select </returns>
+    public Task<List<JobLevelsDTO>> GetAllJobLevelsAsync();
 }

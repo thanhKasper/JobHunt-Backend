@@ -37,7 +37,7 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
                     Tools = jobfilter.Tools,
                     YearsOfExperience = jobfilter.YearsOfExperience,
                     JobsCount = (jobfilter.MatchJobList != null)
-                        ? jobfilter.MatchJobList.Count() 
+                        ? jobfilter.MatchJobList.Count()
                         : 0
                 })
             .FirstAsync();
@@ -50,7 +50,10 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
 
     public async Task<JobFilter?> RemoveJobFilterByIdAsync(Guid id)
     {
-        JobFilter? jobFilter = await _dbContext.JobFilters.FindAsync(id);
+        JobFilter? jobFilter = await _dbContext
+            .JobFilters
+            .Include(jf => jf.Occupation)
+            .Where(jf => jf.JobFilterId == id).FirstAsync();
         if (jobFilter != null) _dbContext.JobFilters.Remove(jobFilter);
         await _dbContext.SaveChangesAsync();
         return jobFilter;
@@ -134,5 +137,15 @@ public class JobFilterRepository(ApplicationDbContext dbContext) : IJobFilterRep
         jobfilter.IsStarred = !currentStarState;
         await _dbContext.SaveChangesAsync();
         return !currentStarState;
+    }
+
+    public async Task<List<JobField>> GetAllJobFieldsAsync()
+    {
+        return await _dbContext.JobFields.ToListAsync();
+    }
+
+    public async Task<List<JobLevel>> GetAllJobLevelsAsync()
+    {
+        return await _dbContext.JobLevels.ToListAsync();
     }
 }

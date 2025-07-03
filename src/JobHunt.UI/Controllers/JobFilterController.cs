@@ -32,6 +32,20 @@ public class JobFilterController(
         return jobFilterDetail;
     }
 
+    [HttpGet("get-all-jobfields")]
+    public async Task<IActionResult> GetAllJobFields()
+    {
+        var jobfieldList = await _jobFilterService.GetAllJobFieldsAsync();
+        return Ok(jobfieldList);
+    }
+
+    [HttpGet("get-all-joblevels")]
+    public async Task<IActionResult> GetAllJobLevels()
+    {
+        var jobfieldList = await _jobFilterService.GetAllJobLevelsAsync();
+        return Ok(jobfieldList);
+    }
+
     [HttpPost]
     public async Task<ActionResult<JobFilterResponseDetail>> CreateNewJobFilter(
         [ModelBinder(BinderType = typeof(UserIdBinder))] Guid? userId,
