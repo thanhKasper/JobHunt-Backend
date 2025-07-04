@@ -4,6 +4,7 @@ using JobHunt.Infrastructure.DatabaseContext;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JobHunt.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250704034924_AddColumn_JobHunter_Profile")]
+    partial class AddColumn_JobHunter_Profile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +82,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasKey("CompanyId");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.Entities.Job", b =>
@@ -122,7 +125,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("JobFilterId");
 
-                    b.ToTable("Jobs", (string)null);
+                    b.ToTable("Jobs");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.Entities.JobFilter", b =>
@@ -174,7 +177,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("OccupationJobFieldId");
 
-                    b.ToTable("JobFilters", (string)null);
+                    b.ToTable("JobFilters");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.Entities.JobHunter", b =>
@@ -320,7 +323,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("ProjectOwnerId");
 
-                    b.ToTable("Projects", (string)null);
+                    b.ToTable("Projects");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Achievement", b =>
@@ -340,7 +343,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("JobHunterId");
 
-                    b.ToTable("Achievement", (string)null);
+                    b.ToTable("Achievement");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Education", b =>
@@ -355,7 +358,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasKey("EducationId");
 
-                    b.ToTable("Educations", (string)null);
+                    b.ToTable("Educations");
 
                     b.HasData(
                         new
@@ -402,7 +405,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasKey("JobFieldId");
 
-                    b.ToTable("JobFields", (string)null);
+                    b.ToTable("JobFields");
 
                     b.HasData(
                         new
@@ -434,7 +437,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasKey("JobLevelId");
 
-                    b.ToTable("JobLevels", (string)null);
+                    b.ToTable("JobLevels");
 
                     b.HasData(
                         new
@@ -491,7 +494,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("JobFilterId");
 
-                    b.ToTable("Language", (string)null);
+                    b.ToTable("Language");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Major", b =>
@@ -506,7 +509,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasKey("MajorId");
 
-                    b.ToTable("Majors", (string)null);
+                    b.ToTable("Majors");
 
                     b.HasData(
                         new
@@ -552,7 +555,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("JobId");
 
-                    b.ToTable("MatchingRequirement", (string)null);
+                    b.ToTable("MatchingRequirement");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.ProjectFeature", b =>
@@ -572,7 +575,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("ProjectFeature", (string)null);
+                    b.ToTable("ProjectFeature");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Role", b =>
@@ -592,7 +595,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("Role", (string)null);
+                    b.ToTable("Role");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.SoftSkill", b =>
@@ -612,7 +615,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("JobFilterId");
 
-                    b.ToTable("SoftSkill", (string)null);
+                    b.ToTable("SoftSkill");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.SpecializedKnowledge", b =>
@@ -632,7 +635,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("JobFilterId");
 
-                    b.ToTable("SpecializedKnowledge", (string)null);
+                    b.ToTable("SpecializedKnowledge");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.TechnologyOrSkill", b =>
@@ -652,7 +655,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.ToTable("TechnologyOrSkill", (string)null);
+                    b.ToTable("TechnologyOrSkill");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Tool", b =>
@@ -672,7 +675,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("JobFilterId");
 
-                    b.ToTable("Tool", (string)null);
+                    b.ToTable("Tool");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
