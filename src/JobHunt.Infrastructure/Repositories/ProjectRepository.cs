@@ -78,11 +78,12 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
     {
         var projects = await _dbContext.Projects
             .Where(p => p.ProjectOwner.Id == userId)
+            .Include(p => p.Roles)
             .ToListAsync(); // Bring data to client first
 
         var distinctRoles = projects
             .Where(p => p.Roles != null)
-            .SelectMany(p => p.Roles!)
+            .SelectMany(p => p.Roles!.Select(role => role.ProjectOwnerRole!.ToUpper()))
             .Distinct()
             .Count();
 
@@ -93,15 +94,17 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
     {
         var projects = await _dbContext.Projects
             .Where(p => p.ProjectOwner.Id == userId)
+            .Include(p => p.TechnologiesOrSkills)
             .ToListAsync(); // Bring data to client first
 
         var distinctTechSkill = projects
             .Where(p => p.TechnologiesOrSkills != null)
-            .SelectMany(p => p.TechnologiesOrSkills!)
-            .Distinct()
-            .Count();
+            .SelectMany(p => p.TechnologiesOrSkills!
+                .Select(tech => tech.TechOrSkill!.ToUpper()));
+        
 
-        return distinctTechSkill;
+
+        return distinctTechSkill.Distinct().Count();
     }
 
     public async Task<List<string>> TopFiveMostUsedTechnologyAsync(Guid userId)
@@ -110,12 +113,16 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
 
         List<Project> res = await _dbContext.Projects
             .Where(p => p.ProjectOwner.Id == userId)
+            .Include(p => p.TechnologiesOrSkills)
+            .Include(p => p.Roles)
+            .AsSplitQuery()
+            .AsNoTracking()
             .ToListAsync();
 
         List<string> techs = res
             .Where(p => p.TechnologiesOrSkills != null)
             .SelectMany(p => p.TechnologiesOrSkills.Select(tech => tech.TechOrSkill!))
-            .Distinct().ToList();
+            .ToList();
 
         Dictionary<string, int> frequentTech = [];
         foreach (var tech in techs)
