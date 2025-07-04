@@ -4,6 +4,7 @@ using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
 using Microsoft.AspNetCore.Identity;
+using SerilogTimings;
 
 namespace JobHunt.Core.Services;
 
@@ -146,11 +147,17 @@ public class ProjectService(
             throw new ArgumentException(validationResults.FirstOrDefault()?.ErrorMessage);
         }
 
-        Project? existingProject = await _projectRepository.GetByIdAsync(projectId.Value)
-            ?? throw new ArgumentException($"Project with ID {projectId} not found.");
+        Project? existingProject = null;
+        Project updatedProject;
 
-        Project updatedProject = await _projectRepository
-            .UpdateAsync(existingProject, request.ToProject());
+        using (Operation.Time("Time to update a project"))
+        {
+            existingProject = await _projectRepository.GetByIdAsync(projectId.Value)
+                ?? throw new ArgumentException($"Project with ID {projectId} not found.");
+            updatedProject = await _projectRepository
+                .UpdateAsync(existingProject, request.ToProject());
+        }
+
         return updatedProject.ToProjectResponse();
     }
 }

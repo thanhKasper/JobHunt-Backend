@@ -418,8 +418,9 @@ public class ProjectServiceTest
         _projectRepositoryMock.Setup(repo => repo.GetByIdAsync(projectId))
             .ReturnsAsync(project);
 
-        _projectRepositoryMock.Setup(repo => repo.UpdateAsync(It.IsAny<Project>()))
-            .ReturnsAsync((Project updatedProject) => updatedProject);
+        _projectRepositoryMock.Setup(repo =>
+            repo.UpdateAsync(It.IsAny<Project>(), It.IsAny<Project>()))
+            .ReturnsAsync((Project existingProject, Project updatedProject) => updatedProject);
 
         var result = await _projectService.UpdateProjectAsync(projectId, projectRequest);
 

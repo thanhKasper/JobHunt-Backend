@@ -13,6 +13,8 @@ public static class AddServiceInjection
         services.AddScoped<IProjectService, ProjectService>();
         services.AddScoped<IJobFilterByUserService, JobFilterByUserService>();
         services.AddTransient<IJwtService, JwtService>();
+        services.AddScoped<IMajorService, MajorService>();
+        services.AddScoped<IEducationService, EducationService>();
         return services;
     }
 }
