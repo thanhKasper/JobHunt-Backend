@@ -15,7 +15,7 @@ public class JobHunter : IdentityUser<Guid>
     [Required]
     public string? FullName { get; set; }
     public DateTime? DateOfBirth { get; set; }
-    [MaxLength(512)]
+    [MaxLength(5000)]
     public string? AboutMe { get; set; }
     [MaxLength(128)]
     public string? Address { get; set; }
@@ -23,13 +23,11 @@ public class JobHunter : IdentityUser<Guid>
     public string? University { get; set; }
     [MaxLength(128)]
     public string? WorkingEmail { get; set; }
-    public List<string>? Awards { get; set; }
 
-    // Navigational Property
-    [Required]
+    // Navigational Properties
     public Major Major { get; set; } = null!;
-    [Required]
     public Education Education { get; set; } = null!;
-    public List<Project>? Projects { get; set; }
+    public List<Project> Projects { get; set; } = [];
     public List<JobFilter> JobFilters { get; set; } = [];
+    public List<Achievement> Awards { get; set; } = [];
 }
