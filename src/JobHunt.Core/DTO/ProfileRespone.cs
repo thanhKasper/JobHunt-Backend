@@ -1,3 +1,5 @@
+using JobHunt.Core.Domain.ValueObjects;
+
 namespace JobHunt.Core.DTO;
 
 public class ProfileResponse
@@ -50,11 +52,13 @@ public static class ProfileResponseExtensions
             WorkingEmail = jobHunter.WorkingEmail,
             AboutMe = jobHunter.AboutMe,
             Address = jobHunter.Address,
-            Education = jobHunter.Education.ToString(),
+            Education = jobHunter.Education?.EducationId.ToString()
+                ?? EducationKey.None.ToString(),
             University = jobHunter.University,
-            Major = jobHunter.Major.ToString(),
+            Major = jobHunter.Major?.MajorId.ToString()
+                ?? MajorKey.None.ToString(),
             PhoneNumber = jobHunter.PhoneNumber,
-            Awards = jobHunter.Awards
+            Awards = jobHunter.Awards.Select(a => a.AchievementName!).ToList(),
         };
     }
 }
