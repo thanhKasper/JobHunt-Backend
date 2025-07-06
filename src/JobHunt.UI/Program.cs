@@ -81,8 +81,12 @@ builder.Services.AddSerilog((services, lc) =>
 {
     lc.ReadFrom.Configuration(builder.Configuration)
         .ReadFrom.Services(services)
-        .WriteTo.Console();
+        .Enrich.FromLogContext()
+        .WriteTo.Console()
+        .WriteTo.Seq(serverUrl: "http://localhost:5341");
 });
+
+
 
 var app = builder.Build();
 
@@ -93,6 +97,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseRouting();
 app.UseCors();
+app.UseSerilogRequestLogging();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
