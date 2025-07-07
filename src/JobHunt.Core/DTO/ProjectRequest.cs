@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using JobHunt.Core.Domain.Entities;
+using JobHunt.Core.Domain.ValueObjects;
 
 namespace JobHunt.Core.DTO;
 
@@ -50,11 +51,21 @@ public class ProjectRequest : IValidatableObject
             ProjectTitle = ProjectTitle,
             Description = Description,
             EndDate = EndDate,
-            Features = Features,
-            Roles = Roles,
+            Features = Features?.Select(feat => new ProjectFeature()
+            {
+                Feature = feat
+            }).ToList() ?? [],
+            Roles = Roles?.Select(role => new Role()
+            {
+                ProjectOwnerRole = role
+            }).ToList() ?? [],
             ProjectLink = ProjectLink,
             StartDate = StartDate,
-            TechnologiesOrSkills = TechnologiesOrSkills,
+            TechnologiesOrSkills = TechnologiesOrSkills?
+                .Select(tech => new TechnologyOrSkill()
+                {
+                    TechOrSkill = tech
+                }).ToList() ?? [],
             DemoLink = DemoLink
         };
     }

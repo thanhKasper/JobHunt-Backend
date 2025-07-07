@@ -1,5 +1,6 @@
 namespace JobHunt.Core.Domain.ValueObjects;
 
+
 public class WorkingLocation
 {
     public string? City { get; set; }

@@ -21,7 +21,7 @@ public static class JobFilterConverterExtension
         {
             Id = jobFilter.JobFilterId,
             CreatedAt = jobFilter.CreatedAt,
-            Occupation = jobFilter.Occupation.ToString(),
+            Occupation = jobFilter.Occupation.VietNameseName,
             Title = jobFilter.FilterTitle,
             IsActive = jobFilter.IsActive,
             IsStarred = jobFilter.IsStarred,

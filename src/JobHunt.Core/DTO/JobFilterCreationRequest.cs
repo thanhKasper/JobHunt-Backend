@@ -17,6 +17,7 @@ public class JobFilterCreationRequest : IValidatableObject
     [JobFieldValidation]
     public string? Occupation { get; set; }
 
+    [Required]
     [JobLevelValidation]
     public string? Level { get; set; }
 
@@ -31,6 +32,8 @@ public class JobFilterCreationRequest : IValidatableObject
     public List<string>? SoftSkills { get; set; }
 
     public List<string>? Languages { get; set; }
+
+    [Required(ErrorMessage = "{0} field is required")]
     public string? WorkingLocation { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -57,19 +60,10 @@ public class JobFilterCreationRequest : IValidatableObject
             }
             else if (
                 Level.Equals("JUNIOR", StringComparison.CurrentCultureIgnoreCase) &&
-                (YearsOfExperience > 3 || YearsOfExperience < 1))
+                (YearsOfExperience >= 3 || YearsOfExperience < 1))
             {
                 yield return new ValidationResult(
                     $"Junior level should have experience between 1 and 3 inclusively",
-                    [nameof(YearsOfExperience)]
-                );
-            }
-            else if (
-                Level.Equals("MIDDLE", StringComparison.CurrentCultureIgnoreCase) &&
-                (YearsOfExperience > 5 || YearsOfExperience <= 3))
-            {
-                yield return new ValidationResult(
-                    $"Middle level should have experience more than 3 years until 5 years",
                     [nameof(YearsOfExperience)]
                 );
             }
@@ -96,16 +90,38 @@ public class JobFilterCreationRequest : IValidatableObject
             CreatedAt = currentTime,
             LastUpdated = currentTime,
             FilterTitle = FilterTitle,
-            Level = Enum.TryParse(Level, true, out JobLevel res) ? res : null,
-            Occupation = Enum.TryParse(Occupation, true, out JobField jobField) ? jobField : null,
-            SoftSkills = SoftSkills,
-            TechnicalKnowledge = TechnicalKnowledge,
-            Tools = Tools,
+            Level = Enum.TryParse(Level, true, out JobLevelKey res)
+                ? new JobLevel { JobLevelId = res }
+                : new JobLevel { JobLevelId = null },
+            Occupation = Enum.TryParse(Occupation, true, out JobFieldKey jobField)
+                ? new JobField { JobFieldId = jobField }
+                : new JobField { JobFieldId = null },
+            SoftSkills = SoftSkills?
+                .Select(e => new SoftSkill()
+                {
+                    SoftSkillName = e,
+                }).ToList() ?? [],
+            SpecializedKnowledges = TechnicalKnowledge?
+                .Select(e => new SpecializedKnowledge()
+                {
+                    Knowledge = e
+                })
+                .ToList() ?? [],
+            Tools = Tools?
+                .Select(e => new Tool()
+                {
+                    ToolName = e
+                })
+                .ToList() ?? [],
             YearsOfExperience = YearsOfExperience,
             IsActive = IsActive,
             IsStarred = IsStarred,
             Location = WorkingLocation,
-            Languages = Languages
+            Languages = Languages?
+                .Select(lang => new Language()
+                {
+                    CommunicationLanguage = lang
+                }).ToList() ?? [],
         };
     }
 }

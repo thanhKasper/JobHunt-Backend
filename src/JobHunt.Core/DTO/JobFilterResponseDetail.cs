@@ -52,13 +52,17 @@ public static class JobFilterResponseExtension
         {
             CreatedAt = jobFilter.CreatedAt,
             Id = jobFilter.JobFilterId,
-            Languages = jobFilter.Languages,
-            Level = jobFilter.Level.ToString(),
-            Occupation = jobFilter.Occupation.ToString(),
-            SoftSkills = jobFilter.SoftSkills,
-            TechnicalKnowledge = jobFilter.TechnicalKnowledge,
+            Languages = jobFilter.Languages
+                .Select(lang => lang.CommunicationLanguage!).ToList() ?? [],
+            Level = jobFilter.Level!.VietNameseName,
+            Occupation = jobFilter.Occupation.VietNameseName,
+            SoftSkills = jobFilter.SoftSkills
+                .Select(sk => sk.SoftSkillName!).ToList(),
+            TechnicalKnowledge = jobFilter.SpecializedKnowledges
+                .Select(specKnowledge => specKnowledge.Knowledge!).ToList(),
             Title = jobFilter.FilterTitle,
-            Tools = jobFilter.Tools,
+            Tools = jobFilter.Tools
+                .Select(tool => tool.ToolName!).ToList(),
             IsActive = jobFilter.IsActive,
             IsStarred = jobFilter.IsStarred,
             YearsOfExperience = jobFilter.YearsOfExperience,

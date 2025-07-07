@@ -79,7 +79,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasKey("CompanyId");
 
-                    b.ToTable("Companies");
+                    b.ToTable("Companies", (string)null);
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.Entities.Job", b =>
@@ -110,9 +110,6 @@ namespace JobHunt.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<string>("MatchingRequirements")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime>("PublishedDate")
                         .HasColumnType("datetime2");
 
@@ -125,7 +122,7 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("JobFilterId");
 
-                    b.ToTable("Jobs");
+                    b.ToTable("Jobs", (string)null);
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.Entities.JobFilter", b =>
@@ -154,29 +151,17 @@ namespace JobHunt.Infrastructure.Migrations
                     b.Property<Guid>("JobFilterOwnerId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Languages")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("LastUpdated")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("Level")
+                    b.Property<int>("LevelJobLevelId")
                         .HasColumnType("int");
 
                     b.Property<string>("Location")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Occupation")
+                    b.Property<int>("OccupationJobFieldId")
                         .HasColumnType("int");
-
-                    b.Property<string>("SoftSkills")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("TechnicalKnowledge")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Tools")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("YearsOfExperience")
                         .HasColumnType("int");
@@ -185,7 +170,11 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasIndex("JobFilterOwnerId");
 
-                    b.ToTable("JobFilters");
+                    b.HasIndex("LevelJobLevelId");
+
+                    b.HasIndex("OccupationJobFieldId");
+
+                    b.ToTable("JobFilters", (string)null);
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.Entities.JobHunter", b =>
@@ -195,8 +184,8 @@ namespace JobHunt.Infrastructure.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("AboutMe")
-                        .HasMaxLength(512)
-                        .HasColumnType("nvarchar(512)");
+                        .HasMaxLength(5000)
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
@@ -205,9 +194,6 @@ namespace JobHunt.Infrastructure.Migrations
                         .HasMaxLength(128)
                         .HasColumnType("nvarchar(128)");
 
-                    b.Property<string>("Awards")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
@@ -215,7 +201,7 @@ namespace JobHunt.Infrastructure.Migrations
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("Education")
+                    b.Property<int>("EducationId")
                         .HasColumnType("int");
 
                     b.Property<string>("Email")
@@ -236,7 +222,7 @@ namespace JobHunt.Infrastructure.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<int>("Major")
+                    b.Property<int>("MajorId")
                         .HasColumnType("int");
 
                     b.Property<string>("NormalizedEmail")
@@ -282,6 +268,10 @@ namespace JobHunt.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("EducationId");
+
+                    b.HasIndex("MajorId");
+
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
 
@@ -311,9 +301,6 @@ namespace JobHunt.Infrastructure.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Features")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ProjectLink")
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
@@ -326,22 +313,366 @@ namespace JobHunt.Infrastructure.Migrations
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
-                    b.Property<string>("Roles")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<DateTime?>("StartDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("TechnologiesOrSkills")
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ProjectId");
 
                     b.HasIndex("ProjectOwnerId");
 
-                    b.ToTable("Projects");
+                    b.ToTable("Projects", (string)null);
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Achievement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AchievementName")
+                        .HasMaxLength(128)
+                        .HasColumnType("nvarchar(128)");
+
+                    b.Property<Guid>("JobHunterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobHunterId");
+
+                    b.ToTable("Achievement", (string)null);
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Education", b =>
+                {
+                    b.Property<int>("EducationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VietNameseName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("EducationId");
+
+                    b.ToTable("Educations", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            EducationId = 0,
+                            VietNameseName = "Không Có Bằng Cấp"
+                        },
+                        new
+                        {
+                            EducationId = 2,
+                            VietNameseName = "Tốt Nghiệp Cao Đẳng"
+                        },
+                        new
+                        {
+                            EducationId = 1,
+                            VietNameseName = "Tốt Nghiệp Trung Học"
+                        },
+                        new
+                        {
+                            EducationId = 3,
+                            VietNameseName = "Tốt Nghiệp Cử Nhân/Kỹ Sư/Bác Sĩ"
+                        },
+                        new
+                        {
+                            EducationId = 4,
+                            VietNameseName = "Tốt Nghiệp Thạc Sĩ"
+                        },
+                        new
+                        {
+                            EducationId = 5,
+                            VietNameseName = "Tốt Nghiệp Tiến Sĩ"
+                        });
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.JobField", b =>
+                {
+                    b.Property<int>("JobFieldId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VietNameseName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("JobFieldId");
+
+                    b.ToTable("JobFields", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            JobFieldId = 0,
+                            VietNameseName = "Công Nghệ Thông Tin"
+                        },
+                        new
+                        {
+                            JobFieldId = 1,
+                            VietNameseName = "Phát Triển Phần Mềm"
+                        },
+                        new
+                        {
+                            JobFieldId = 48,
+                            VietNameseName = "Giáo Dục Ngôn Ngữ"
+                        });
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.JobLevel", b =>
+                {
+                    b.Property<int>("JobLevelId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VietNameseName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("JobLevelId");
+
+                    b.ToTable("JobLevels", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            JobLevelId = 0,
+                            VietNameseName = "Thực Tập Sinh"
+                        },
+                        new
+                        {
+                            JobLevelId = 1,
+                            VietNameseName = "Nhân Viên Mới"
+                        },
+                        new
+                        {
+                            JobLevelId = 2,
+                            VietNameseName = "Nhân Viên"
+                        },
+                        new
+                        {
+                            JobLevelId = 3,
+                            VietNameseName = "Chuyên Viên"
+                        },
+                        new
+                        {
+                            JobLevelId = 4,
+                            VietNameseName = "Trưởng Nhóm"
+                        },
+                        new
+                        {
+                            JobLevelId = 5,
+                            VietNameseName = "Quản Lý"
+                        },
+                        new
+                        {
+                            JobLevelId = 6,
+                            VietNameseName = "Giám Đốc"
+                        });
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Language", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("CommunicationLanguage")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.Property<Guid>("JobFilterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobFilterId");
+
+                    b.ToTable("Language", (string)null);
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Major", b =>
+                {
+                    b.Property<int>("MajorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VietNameseName")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("MajorId");
+
+                    b.ToTable("Majors", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            MajorId = 0,
+                            VietNameseName = "Không Có Chuyên Ngành"
+                        },
+                        new
+                        {
+                            MajorId = 1,
+                            VietNameseName = "Khoa Học Máy Tính"
+                        },
+                        new
+                        {
+                            MajorId = 3,
+                            VietNameseName = "Phát Triển Phần Mềm"
+                        },
+                        new
+                        {
+                            MajorId = 7,
+                            VietNameseName = "Kỹ Thuật Máy Tính"
+                        },
+                        new
+                        {
+                            MajorId = 22,
+                            VietNameseName = "Kế Toán"
+                        });
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.MatchingRequirement", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("JobId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Requirement")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobId");
+
+                    b.ToTable("MatchingRequirement", (string)null);
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.ProjectFeature", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Feature")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("ProjectFeature", (string)null);
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Role", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ProjectOwnerRole")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("Role", (string)null);
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.SoftSkill", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("JobFilterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SoftSkillName")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobFilterId");
+
+                    b.ToTable("SoftSkill", (string)null);
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.SpecializedKnowledge", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("JobFilterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Knowledge")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobFilterId");
+
+                    b.ToTable("SpecializedKnowledge", (string)null);
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.TechnologyOrSkill", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ProjectId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("TechOrSkill")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProjectId");
+
+                    b.ToTable("TechnologyOrSkill", (string)null);
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Tool", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("JobFilterId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ToolName")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobFilterId");
+
+                    b.ToTable("Tool", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -474,7 +805,42 @@ namespace JobHunt.Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("JobHunt.Core.Domain.ValueObjects.JobLevel", "Level")
+                        .WithMany("JobFilters")
+                        .HasForeignKey("LevelJobLevelId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JobHunt.Core.Domain.ValueObjects.JobField", "Occupation")
+                        .WithMany("JobFilters")
+                        .HasForeignKey("OccupationJobFieldId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("JobFilterOwner");
+
+                    b.Navigation("Level");
+
+                    b.Navigation("Occupation");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.Entities.JobHunter", b =>
+                {
+                    b.HasOne("JobHunt.Core.Domain.ValueObjects.Education", "Education")
+                        .WithMany("JobHunters")
+                        .HasForeignKey("EducationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("JobHunt.Core.Domain.ValueObjects.Major", "Major")
+                        .WithMany("JobHunters")
+                        .HasForeignKey("MajorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Education");
+
+                    b.Navigation("Major");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.Entities.Project", b =>
@@ -486,6 +852,105 @@ namespace JobHunt.Infrastructure.Migrations
                         .IsRequired();
 
                     b.Navigation("ProjectOwner");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Achievement", b =>
+                {
+                    b.HasOne("JobHunt.Core.Domain.Entities.JobHunter", "JobHunter")
+                        .WithMany("Awards")
+                        .HasForeignKey("JobHunterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobHunter");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Language", b =>
+                {
+                    b.HasOne("JobHunt.Core.Domain.Entities.JobFilter", "JobFilter")
+                        .WithMany("Languages")
+                        .HasForeignKey("JobFilterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobFilter");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.MatchingRequirement", b =>
+                {
+                    b.HasOne("JobHunt.Core.Domain.Entities.Job", "Job")
+                        .WithMany("MatchingRequirements")
+                        .HasForeignKey("JobId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Job");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.ProjectFeature", b =>
+                {
+                    b.HasOne("JobHunt.Core.Domain.Entities.Project", "Project")
+                        .WithMany("Features")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Role", b =>
+                {
+                    b.HasOne("JobHunt.Core.Domain.Entities.Project", "Project")
+                        .WithMany("Roles")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.SoftSkill", b =>
+                {
+                    b.HasOne("JobHunt.Core.Domain.Entities.JobFilter", "JobFilter")
+                        .WithMany("SoftSkills")
+                        .HasForeignKey("JobFilterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobFilter");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.SpecializedKnowledge", b =>
+                {
+                    b.HasOne("JobHunt.Core.Domain.Entities.JobFilter", "JobFilter")
+                        .WithMany("SpecializedKnowledges")
+                        .HasForeignKey("JobFilterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobFilter");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.TechnologyOrSkill", b =>
+                {
+                    b.HasOne("JobHunt.Core.Domain.Entities.Project", "Project")
+                        .WithMany("TechnologiesOrSkills")
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Tool", b =>
+                {
+                    b.HasOne("JobHunt.Core.Domain.Entities.JobFilter", "JobFilter")
+                        .WithMany("Tools")
+                        .HasForeignKey("JobFilterId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobFilter");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -544,16 +1009,60 @@ namespace JobHunt.Infrastructure.Migrations
                     b.Navigation("PostedJobs");
                 });
 
+            modelBuilder.Entity("JobHunt.Core.Domain.Entities.Job", b =>
+                {
+                    b.Navigation("MatchingRequirements");
+                });
+
             modelBuilder.Entity("JobHunt.Core.Domain.Entities.JobFilter", b =>
                 {
+                    b.Navigation("Languages");
+
                     b.Navigation("MatchJobList");
+
+                    b.Navigation("SoftSkills");
+
+                    b.Navigation("SpecializedKnowledges");
+
+                    b.Navigation("Tools");
                 });
 
             modelBuilder.Entity("JobHunt.Core.Domain.Entities.JobHunter", b =>
                 {
+                    b.Navigation("Awards");
+
                     b.Navigation("JobFilters");
 
                     b.Navigation("Projects");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.Entities.Project", b =>
+                {
+                    b.Navigation("Features");
+
+                    b.Navigation("Roles");
+
+                    b.Navigation("TechnologiesOrSkills");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Education", b =>
+                {
+                    b.Navigation("JobHunters");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.JobField", b =>
+                {
+                    b.Navigation("JobFilters");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.JobLevel", b =>
+                {
+                    b.Navigation("JobFilters");
+                });
+
+            modelBuilder.Entity("JobHunt.Core.Domain.ValueObjects.Major", b =>
+                {
+                    b.Navigation("JobHunters");
                 });
 #pragma warning restore 612, 618
         }

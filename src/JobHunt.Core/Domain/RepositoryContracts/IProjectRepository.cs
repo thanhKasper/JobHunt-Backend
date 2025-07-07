@@ -12,7 +12,7 @@ public interface IProjectRepository
     Task<List<Project>> GetAllProjectsWithFilterAsync(Guid userId, string searchTerm, List<string> technologiesOrSkills);
 
     // Update operations
-    Task<Project> UpdateAsync(Project project);
+    Task<Project> UpdateAsync(Project oldProject, Project newProject);
 
     // Delete operations
     Task<Project?> DeleteAsync(Guid projectId);

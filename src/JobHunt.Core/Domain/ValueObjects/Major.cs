@@ -1,6 +1,9 @@
+using System.ComponentModel.DataAnnotations;
+using JobHunt.Core.Domain.Entities;
+
 namespace JobHunt.Core.Domain.ValueObjects;
 
-public enum Major
+public enum MajorKey
 {
     // Default
     None,
@@ -97,3 +100,14 @@ public enum Major
     Climate_Change_Studies
 }
 
+public class Major
+{
+    [Key]
+    public MajorKey MajorId { get; set; }
+
+    [Required]
+    [MaxLength(64)]
+    public string? VietNameseName { get; set; }
+    
+    public List<JobHunter> JobHunters { get; set; } = [];
+}

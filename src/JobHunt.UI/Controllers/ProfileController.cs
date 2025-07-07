@@ -12,15 +12,21 @@ public class ProfileController : ApiControllerBase
     private readonly ILogger<ProfileController> _logger;
     private readonly IProfileService _profileService;
     private readonly UserManager<JobHunter> _userManager;
+    private readonly IMajorService _majorService;
+    private readonly IEducationService _educationService;
 
     public ProfileController(
         ILogger<ProfileController> logger,
         IProfileService profileService,
+        IMajorService majorService,
+        IEducationService educationService,
         UserManager<JobHunter> userManager)
     {
         _profileService = profileService;
         _logger = logger;
         _userManager = userManager;
+        _majorService = majorService;
+        _educationService = educationService;
     }
 
     [HttpGet]
@@ -56,5 +62,19 @@ public class ProfileController : ApiControllerBase
             Email = user.Email
         };
         return profileSimple;
+    }
+
+    [HttpGet("major-list")]
+    public async Task<ActionResult<List<MajorKeyValuePair>>> GetMajorList()
+    {
+        var majors = await _majorService.GetMajorListAsync();
+        return majors;
+    }
+
+    [HttpGet("degree-list")]
+    public async Task<ActionResult<List<EducationKeyValuePair>>> GetDegreeList()
+    {
+        var degrees = await _educationService.GetDegreeListAsync();
+        return degrees;
     }
 }

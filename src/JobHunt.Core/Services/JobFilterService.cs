@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using System.Security;
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
@@ -52,9 +51,6 @@ public class JobFilterService(
         jobFilterRequest.IsActive = true;
         jobFilterRequest.IsStarred = false;
 
-        // Assign user to that jobFilterRequest
-
-
         JobFilter jobFilter = jobFilterRequest.ToJobFilter();
 
         // Fill empty YearsOfExperience and Level
@@ -71,12 +67,11 @@ public class JobFilterService(
 
     public async Task<JobFilterResponseSimple> DeleteJobFilterAsync(Guid? jobFilterId)
     {
-        // The enlightment of async/await :))
-        var getJobFilterTask = await GetJobFilterDetailAsync(jobFilterId);
-        if (jobFilterId == null) return new JobFilterResponseSimple() { Id = Guid.Empty };
+        if (!jobFilterId.HasValue)
+            throw new ArgumentNullException(nameof(jobFilterId), "Job filter ID cannot be empty");
         JobFilter? deleteJobFilter = await _jobFilterRepo.RemoveJobFilterByIdAsync(jobFilterId.Value);
         if (deleteJobFilter != null) return deleteJobFilter.ToJobFilterResponseSimple();
-        return new JobFilterResponseSimple() { Id = Guid.Empty };
+        throw new ArgumentException("Cannot find job filter of this id", nameof(jobFilterId));
     }
 
     public async Task<List<JobFilterResponseSimple>> GetAllJobFilterSimpleAsync()
@@ -122,4 +117,25 @@ public class JobFilterService(
 
         return result;
     }
+
+    public async Task<List<JobFieldsDTO>> GetAllJobFieldsAsync()
+    {
+        var jobfieldList = await _jobFilterRepo.GetAllJobFieldsAsync();
+        return jobfieldList.Select(jobfield => new JobFieldsDTO()
+        {
+            Key = jobfield.JobFieldId.ToString(),
+            Value = jobfield.VietNameseName
+        }).ToList();
+    }
+
+    public async Task<List<JobLevelsDTO>> GetAllJobLevelsAsync()
+    {
+        var joblevelList = await _jobFilterRepo.GetAllJobLevelsAsync();
+        return joblevelList.Select(jobfield => new JobLevelsDTO()
+        {
+            Key = jobfield.JobLevelId.ToString(),
+            Value = jobfield.VietNameseName
+        }).ToList();
+    }
+
 }

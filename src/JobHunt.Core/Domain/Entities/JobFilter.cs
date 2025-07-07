@@ -16,15 +16,8 @@ public class JobFilter
     [Required]
     [MaxLength(128)]
     public string? FilterTitle { get; set; }
-    [Required]
-    public JobField? Occupation { get; set; }
     public string? Location { get; set; }
-    public JobLevel? Level { get; set; }
     public int? YearsOfExperience { get; set; }
-    public List<string>? TechnicalKnowledge { get; set; }
-    public List<string>? SoftSkills { get; set; }
-    public List<string>? Tools { get; set; }
-    public List<string>? Languages { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? LastUpdated { get; set; }
 
@@ -33,19 +26,32 @@ public class JobFilter
 
     [DefaultValue(0)]
     public int AverageCompatibility { get; set; } = 0;
+
+
+
     // Navigational Property
+    [Required]
+    public JobField Occupation { get; set; } = null!; // Required one-to-many relationship
+    [Required]
+    public JobLevel Level { get; set; } = null!; // Required one-to-many relationship
     public List<Job>? MatchJobList { get; set; }
     public JobHunter JobFilterOwner { get; set; } = null!;
+    public List<SpecializedKnowledge> SpecializedKnowledges { get; set; } = [];
+    public List<Language> Languages { get; set; } = [];
+    public List<Tool> Tools { get; set; } = [];
+    public List<SoftSkill> SoftSkills { get; set; } = [];
+
+
+    #region Business Logic Core
 
     public void FillYearExp()
     {
-        YearsOfExperience = Level switch
+        YearsOfExperience = Level!.JobLevelId switch
         {
-            JobLevel.Intern => 0,
-            JobLevel.Fresher => 0,
-            JobLevel.Junior => 3,
-            JobLevel.Middle => 5,
-            _ => 20
+            JobLevelKey.Intern => 0,
+            JobLevelKey.Fresher => 1,
+            JobLevelKey.Junior => 3,
+            _ => 5
         };
     }
 
@@ -53,10 +59,10 @@ public class JobFilter
     {
         Level = YearsOfExperience switch
         {
-            < 1 => JobLevel.Fresher,
-            <= 3 => JobLevel.Junior,
-            <= 5 => JobLevel.Middle,
-            _ => JobLevel.Senior,
+            <= 1 => new JobLevel { JobLevelId = JobLevelKey.Intern },
+            <= 3 => new JobLevel { JobLevelId = JobLevelKey.Junior },
+            _ => new JobLevel { JobLevelId = JobLevelKey.Senior },
         };
     }
+    #endregion
 }

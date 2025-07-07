@@ -4,6 +4,7 @@ using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.DTO;
 using JobHunt.Core.ServiceContracts;
 using Microsoft.AspNetCore.Identity;
+using SerilogTimings;
 
 namespace JobHunt.Core.Services;
 
@@ -146,21 +147,17 @@ public class ProjectService(
             throw new ArgumentException(validationResults.FirstOrDefault()?.ErrorMessage);
         }
 
-        Project? existingProject = await _projectRepository.GetByIdAsync(projectId.Value)
-            ?? throw new ArgumentException($"Project with ID {projectId} not found.");
+        Project? existingProject = null;
+        Project updatedProject;
 
-        // The updating data
-        existingProject.ProjectTitle = request.ProjectTitle;
-        existingProject.Description = request.Description;
-        existingProject.ProjectLink = request.ProjectLink;
-        existingProject.StartDate = request.StartDate;
-        existingProject.EndDate = request.EndDate;
-        existingProject.TechnologiesOrSkills = request.TechnologiesOrSkills;
-        existingProject.Roles = request.Roles;
-        existingProject.Features = request.Features;
-        existingProject.ProjectLink = request.ProjectLink;
+        using (Operation.Time("Time to update a project"))
+        {
+            existingProject = await _projectRepository.GetByIdAsync(projectId.Value)
+                ?? throw new ArgumentException($"Project with ID {projectId} not found.");
+            updatedProject = await _projectRepository
+                .UpdateAsync(existingProject, request.ToProject());
+        }
 
-        Project updatedProject = await _projectRepository.UpdateAsync(existingProject);
         return updatedProject.ToProjectResponse();
     }
 }

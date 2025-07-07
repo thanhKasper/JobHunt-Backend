@@ -43,7 +43,8 @@ public static class JobEntityConverterExtension
         return new JobResponse
         {
             JobTitle = job.JobTitle,
-            MatchingRequirements = job.MatchingRequirements,
+            MatchingRequirements = job.MatchingRequirements
+                .Select(req => req.Requirement!).ToList(),
             JobPostUrl = job.JobDetailUrl,
             PostedDate = job.PublishedDate,
             Company = job.Company?.CompanyName,
