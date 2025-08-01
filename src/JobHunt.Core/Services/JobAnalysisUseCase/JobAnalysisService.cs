@@ -1,4 +1,5 @@
 using JobHunt.Core.ServiceContracts.JobAnalysisServiceContract;
+using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingAnalyzer.DTO;
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingAnalyzer.Interfaces;
 
 namespace JobHunt.Core.Services.JobAnalysisUseCase;
@@ -15,6 +16,9 @@ public class JobAnalysisService(
     
     public void AnalyseJobPosting(string rawJobPosting)
     {
-        throw new NotImplementedException();
+        if (String.IsNullOrEmpty(rawJobPosting))
+            throw new ArgumentException("Argument cannot be null or empty");
+
+        JobPosting formattedJobPosting = _jobPostFormatter.FormatJobPosting(rawJobPosting);
     }
 }
