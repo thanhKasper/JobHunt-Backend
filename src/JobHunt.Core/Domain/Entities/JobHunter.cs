@@ -29,5 +29,6 @@ public class JobHunter : IdentityUser<Guid>
     public Education Education { get; set; } = null!;
     public List<Project> Projects { get; set; } = [];
     public List<JobFilter> JobFilters { get; set; } = [];
-    public List<Achievement> Awards { get; set; } = [];
+    public List<PersonalAchievement> Achievements { get; set; } = [];
+
 }

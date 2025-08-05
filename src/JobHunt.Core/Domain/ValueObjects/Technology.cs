@@ -3,11 +3,12 @@ using JobHunt.Core.Domain.Entities;
 
 namespace JobHunt.Core.Domain.ValueObjects;
 
-public class TechnologyOrSkill
+public class Technology
 {
     [Key]
     public Guid? Id { get; set; }
     [MaxLength(64)]
-    public string? TechOrSkill { get; set; }
-    public Project Project { get; set; } = null!;
+    public string? TechnologyName { get; set; }
+    public Project? Project { get; set; }
+    public JobFilter? JobFilter { get; set; }
 }

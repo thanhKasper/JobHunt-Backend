@@ -10,5 +10,6 @@ public class Tool
     [MaxLength(32)]
     public string? ToolName { get; set; }
 
-    public JobFilter JobFilter { get; set; } = null!;
+    public JobFilter? JobFilter { get; set; }
+    public Project? Project { get; set; }
 }

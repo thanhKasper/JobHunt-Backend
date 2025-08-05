@@ -25,4 +25,11 @@ public class Job
     public JobFilter JobFilter { get; set; } = null!;
     public List<MatchingRequirement> MatchingRequirements { get; set; } = [];
     #endregion
+
+    #region Business Logic Core
+    public void UpdateCompatiblePercentage(int matchingPercentage)
+    {
+        CompatiblePercentage = matchingPercentage;
+    }
+    #endregion
 }

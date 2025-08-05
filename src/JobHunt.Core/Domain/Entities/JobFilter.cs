@@ -30,15 +30,14 @@ public class JobFilter
 
 
     // Navigational Property
-    [Required]
-    public JobField Occupation { get; set; } = null!; // Required one-to-many relationship
-    [Required]
-    public JobLevel Level { get; set; } = null!; // Required one-to-many relationship
-    public List<Job>? MatchJobList { get; set; }
+    public JobField Occupation { get; set; } = null!;
+    public JobLevel Level { get; set; } = null!;
+    public List<Job> MatchJobList { get; set; } = [];
     public JobHunter JobFilterOwner { get; set; } = null!;
     public List<SpecializedKnowledge> SpecializedKnowledges { get; set; } = [];
     public List<Language> Languages { get; set; } = [];
     public List<Tool> Tools { get; set; } = [];
+    public List<Technology> Technologies { get; set; } = [];
     public List<SoftSkill> SoftSkills { get; set; } = [];
 
 

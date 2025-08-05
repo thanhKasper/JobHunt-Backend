@@ -3,11 +3,11 @@ using JobHunt.Core.Domain.Entities;
 
 namespace JobHunt.Core.Domain.ValueObjects;
 
-public class Achievement
+public class PersonalAchievement
 {
     [Key]
     public Guid? Id { get; set; }
     [MaxLength(128)]
-    public string? AchievementName { get; set; }
+    public string? Achievement { get; set; }
     public JobHunter JobHunter { get; set; } = null!;
 }
