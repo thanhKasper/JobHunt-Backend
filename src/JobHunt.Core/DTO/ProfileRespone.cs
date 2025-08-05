@@ -58,7 +58,7 @@ public static class ProfileResponseExtensions
             Major = jobHunter.Major?.MajorId.ToString()
                 ?? MajorKey.None.ToString(),
             PhoneNumber = jobHunter.PhoneNumber,
-            Awards = jobHunter.Awards.Select(a => a.AchievementName!).ToList(),
+            Awards = jobHunter.Achievements.Select(a => a.Achievement!).ToList(),
         };
     }
 }

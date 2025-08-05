@@ -11,7 +11,8 @@ public class ProjectResponse
     public DateTime? EndDate { get; set; }
     public string? Description { get; set; }
     public List<string>? Roles { get; set; }
-    public List<string>? TechnologiesOrSkills { get; set; }
+    public List<string>? Technologies { get; set; }
+    public List<string>? Tools { get; set; }
     public List<string>? Features { get; set; }
     public string? ProjectLink { get; set; }
     public string? DemoLink { get; set; }
@@ -30,7 +31,8 @@ public class ProjectResponse
             EndDate == other.EndDate &&
             Description == other.Description &&
             Utils.CompareArrayOfString(Features, other.Features) &&
-            Utils.CompareArrayOfString(TechnologiesOrSkills, other.TechnologiesOrSkills) &&
+            Utils.CompareArrayOfString(Technologies, other.Technologies) &&
+            Utils.CompareArrayOfString(Tools, other.Tools) &&
             Utils.CompareArrayOfString(Roles, other.Roles) &&
             ProjectLink == other.ProjectLink &&
             DemoLink == other.DemoLink;
@@ -57,7 +59,8 @@ public static class ProjectResponseExtension
             ProjectTitle = project.ProjectTitle,
             Roles = project.Roles.Select(role => role.ProjectOwnerRole!).ToList(),
             StartDate = project.StartDate,
-            TechnologiesOrSkills = project.TechnologiesOrSkills.Select(tech => tech.TechOrSkill!).ToList(),
+            Technologies = project.Technologies.Select(tech => tech.TechnologyName!).ToList(),
+            Tools = project.Tools.Select(tool => tool.ToolName!).ToList(),
             DemoLink = project.DemoLink
         };
     }

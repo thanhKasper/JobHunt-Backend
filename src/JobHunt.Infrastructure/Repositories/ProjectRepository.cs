@@ -37,32 +37,33 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
             .CountAsync();
     }
 
-    public async Task<List<Project>> GetAllProjectsWithFilterAsync(Guid userId, string searchTerm, List<string> technologiesOrSkills)
+    public async Task<List<Project>> GetAllProjectsWithFilterAsync(Guid userId, string searchTerm, List<string> technologies)
     {
         List<Project> projects = await _dbContext.Projects
             .AsNoTracking()
             .Include(p => p.ProjectOwner)
-            .Include(p => p.TechnologiesOrSkills)
+            .Include(p => p.Technologies)
+            .Include(p => p.Tools)
             .Include(p => p.Roles)
             .AsSplitQuery()
             .Where(p => p.ProjectOwner.Id == userId &&
                         p.ProjectTitle!.Contains(searchTerm))
             .ToListAsync();
 
-        if (technologiesOrSkills.Count == 0) return projects;
+        if (technologies.Count == 0) return projects;
 
         return projects.Where(
                     project =>
-                        (project.TechnologiesOrSkills.Select(tech => tech.TechOrSkill) ?? [])
+                        (project.Technologies.Select(tech => tech.TechnologyName) ?? [])
                         .ToHashSet()
-                        .Intersect(technologiesOrSkills.ToHashSet()).Any()).ToList();
+                        .Intersect(technologies.ToHashSet()).Any()).ToList();
     }
 
     public async Task<Project?> GetByIdAsync(Guid projectId)
     {
         return await _dbContext.Projects
             .AsNoTracking()
-            .Include(p => p.TechnologiesOrSkills)
+            .Include(p => p.Technologies)
             .Include(p => p.Features)
             .Include(p => p.Roles)
             .AsSplitQuery()
@@ -92,19 +93,33 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
 
     public async Task<int> TechnologyUsedInProjectsCountAsync(Guid userId)
     {
-        var projects = await _dbContext.Projects
-            .Where(p => p.ProjectOwner.Id == userId)
-            .Include(p => p.TechnologiesOrSkills)
-            .ToListAsync(); // Bring data to client first
 
-        var distinctTechSkill = projects
-            .Where(p => p.TechnologiesOrSkills != null)
-            .SelectMany(p => p.TechnologiesOrSkills!
-                .Select(tech => tech.TechOrSkill!.ToUpper()));
+        List<Guid> jobSeekerProjectsList = await _dbContext.Projects
+            .AsNoTracking()
+            .Where(p => p.ProjectOwner.Id == userId)
+            .Select(p => p.ProjectId)
+            .ToListAsync();
+
+        int technologiesCount = await _dbContext.Technologies
+            .Where(tech => 
+                tech.Project != null && 
+                tech.TechnologyName != null &&
+                jobSeekerProjectsList.Contains(tech.Project.ProjectId))
+            .DistinctBy(tech => tech.TechnologyName!.ToUpper())
+            .CountAsync();
+        //var projects = await _dbContext.Projects
+        //    .Where(p => p.ProjectOwner.Id == userId)
+        //    .Include(p => p.Technologies)
+        //    .ToListAsync(); // Bring data to client first
+
+        //var distinctTechSkill = projects
+        //    .Where(p => p.Technologies != null)
+        //    .SelectMany(p => p.Technologies!
+        //        .Select(tech => tech.TechnologyName!.ToUpper()));
         
 
 
-        return distinctTechSkill.Distinct().Count();
+        return technologiesCount;
     }
 
     public async Task<List<string>> TopFiveMostUsedTechnologyAsync(Guid userId)
@@ -113,15 +128,15 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
 
         List<Project> res = await _dbContext.Projects
             .Where(p => p.ProjectOwner.Id == userId)
-            .Include(p => p.TechnologiesOrSkills)
+            .Include(p => p.Technologies)
             .Include(p => p.Roles)
             .AsSplitQuery()
             .AsNoTracking()
             .ToListAsync();
 
         List<string> techs = res
-            .Where(p => p.TechnologiesOrSkills != null)
-            .SelectMany(p => p.TechnologiesOrSkills.Select(tech => tech.TechOrSkill!))
+            .Where(p => p.Technologies != null)
+            .SelectMany(p => p.Technologies.Select(tech => tech.TechnologyName!))
             .ToList();
 
         Dictionary<string, int> frequentTech = [];
@@ -164,10 +179,10 @@ public class ProjectRepository(ApplicationDbContext dbContext) : IProjectReposit
         // Clear the old one and add a new list of result
 
         _dbContext.RemoveRange(
-            oldProject.TechnologiesOrSkills
-            .Where(tech => tech.Project.ProjectId == oldProject.ProjectId));
+            oldProject.Technologies
+            .Where(tech => tech.Project != null && tech.Project.ProjectId == oldProject.ProjectId));
 
-        oldProject.TechnologiesOrSkills.AddRange(newProject.TechnologiesOrSkills);
+        oldProject.Technologies.AddRange(newProject.Technologies);
 
         _dbContext.RemoveRange(
             oldProject.Features

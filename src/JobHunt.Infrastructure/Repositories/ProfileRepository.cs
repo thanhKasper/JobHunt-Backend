@@ -17,7 +17,7 @@ public class ProfileRepository(ApplicationDbContext dbContext) : IProfileReposit
             .AsNoTracking()
             .Include(jh => jh.Major)
             .Include(jh => jh.Education)
-            .Include(jh => jh.Awards)
+            .Include(jh => jh.Achievements)
             .AsSplitQuery()
             .Where(jh => jh.Id == jobHunterId)
             .FirstAsync();
@@ -28,7 +28,7 @@ public class ProfileRepository(ApplicationDbContext dbContext) : IProfileReposit
         JobHunter user = await _dbContext.JobHunters
             .Include(jh => jh.Major)
             .Include(jh => jh.Education)
-            .Include(jh => jh.Awards)
+            .Include(jh => jh.Achievements)
             .AsSplitQuery()
             .Where(jh => jh.Id == jobHunter.Id)
             .FirstAsync()
@@ -52,8 +52,8 @@ public class ProfileRepository(ApplicationDbContext dbContext) : IProfileReposit
         user.PhoneNumber = jobHunter.PhoneNumber;
 
 
-        _dbContext.RemoveRange(user.Awards);
-        user.Awards.AddRange(jobHunter.Awards);
+        _dbContext.RemoveRange(user.Achievements);
+        user.Achievements.AddRange(jobHunter.Achievements);
 
         _dbContext.JobHunters.Update(user);
         await _dbContext.SaveChangesAsync();

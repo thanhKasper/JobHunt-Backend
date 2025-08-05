@@ -11,7 +11,7 @@ public class ProjectResponseSummary
     public DateTime? EndDate { get; set; }
     public string? ProjectDescription { get; set; }
     public List<string>? Roles { get; set; }
-    public List<string>? TechnologiesOrSkills { get; set; }
+    public List<string>? TechnologiesAndTools { get; set; }
     public string? ProjectLink { get; set; }
 
 
@@ -28,7 +28,9 @@ public static class ProjectResponseSummaryExtension
             StartDate = project.StartDate,
             EndDate = project.EndDate,
             Roles = project.Roles.Select(role => role.ProjectOwnerRole!).ToList(),
-            TechnologiesOrSkills = project.TechnologiesOrSkills.Select(tech => tech.TechOrSkill!).ToList(),
+            TechnologiesAndTools = project.Technologies.Select(tech => tech.TechnologyName!)
+                .Concat(project.Tools.Select(tool => tool.ToolName!))
+                .ToList(),
             ProjectLink = project.ProjectLink,
             ProjectDescription = project.Description
         };

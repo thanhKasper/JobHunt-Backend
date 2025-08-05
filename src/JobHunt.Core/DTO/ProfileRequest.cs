@@ -51,7 +51,7 @@ public class ProfileRequest : IValidatableObject
                 new Major { MajorId = major } :
                 new Major { MajorId = MajorKey.None },
             PhoneNumber = PhoneNumber,
-            Awards = Awards?.Select(a => new Achievement { AchievementName = a }).ToList() ?? [],
+            Achievements = Awards?.Select(a => new PersonalAchievement { Achievement = a }).ToList() ?? [],
 
         };
     }

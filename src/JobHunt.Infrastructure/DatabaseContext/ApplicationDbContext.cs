@@ -17,6 +17,8 @@ public class ApplicationDbContext(DbContextOptions options) :
     public virtual DbSet<JobLevel> JobLevels { get; set; }
     public virtual DbSet<Major> Majors { get; set; }
     public virtual DbSet<Education> Educations { get; set; }
+    public virtual DbSet<WorkingExperience> WorkingExperiences { get; set; }
+    public virtual DbSet<Technology> Technologies { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

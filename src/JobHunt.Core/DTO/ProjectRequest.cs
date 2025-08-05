@@ -21,7 +21,9 @@ public class ProjectRequest : IValidatableObject
 
     public List<string>? Roles { get; set; }
 
-    public List<string>? TechnologiesOrSkills { get; set; }
+    public List<string>? Technologies { get; set; }
+
+    public List<string>? Tools { get; set; }
 
     public List<string>? Features { get; set; }
 
@@ -60,11 +62,16 @@ public class ProjectRequest : IValidatableObject
                 ProjectOwnerRole = role
             }).ToList() ?? [],
             ProjectLink = ProjectLink,
-            StartDate = StartDate,
-            TechnologiesOrSkills = TechnologiesOrSkills?
-                .Select(tech => new TechnologyOrSkill()
+            StartDate = StartDate!.Value,
+            Technologies = Technologies?
+                .Select(tech => new Technology()
                 {
-                    TechOrSkill = tech
+                    TechnologyName = tech
+                }).ToList() ?? [],
+            Tools = Tools?
+                .Select(tool => new Tool()
+                {
+                    ToolName = tool
                 }).ToList() ?? [],
             DemoLink = DemoLink
         };
