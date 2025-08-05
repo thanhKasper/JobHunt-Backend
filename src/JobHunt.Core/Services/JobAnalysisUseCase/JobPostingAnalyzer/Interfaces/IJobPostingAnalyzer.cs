@@ -4,5 +4,6 @@ namespace JobHunt.Core.Services.JobAnalysisUseCase.JobPostingAnalyzer.Interfaces
 
 public interface IJobPostingAnalyzer
 {
-    int JobMatchingPercentage(JobPosting jobPost);
+    bool IsJobPostingMatchWithJobSeekerExpectation(JobPosting jobPost, UserJobFilter userExpectation);
+    int CalculateMatchingPercentageBetweenJobPostAndJobSeeker(JobPosting jobPost, JobSeekerProfile jobSeeker);
 }
