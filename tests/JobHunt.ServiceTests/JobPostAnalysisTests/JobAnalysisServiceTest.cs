@@ -92,7 +92,9 @@ public class JobPostAnalysisTest
         SuccessfullyFormatJobPost();
         GetListOfJobFilters();
         JobPostMatchWithJobExpectation();
-        ReturnInvalidMatchingPercentage(101);
+
+        const int ABOVE_ACCEPTABLE_RANGE = 101;
+        ComputeJobSeekerCompatibility(ABOVE_ACCEPTABLE_RANGE);
 
         testMethod.Should().Throw<Exception>()
             .WithMessage("Matching percentage should be between 0% and 100%");
@@ -105,23 +107,17 @@ public class JobPostAnalysisTest
         SuccessfullyFormatJobPost();
         GetListOfJobFilters();
         JobPostMatchWithJobExpectation();
-        ReturnInvalidMatchingPercentage(-1);
+
+        const int BELOW_ACCEPTABLE_RANGE = -1;
+        ComputeJobSeekerCompatibility(BELOW_ACCEPTABLE_RANGE);
 
         testMethod.Should().Throw<Exception>()
             .WithMessage("Matching percentage should be between 0% and 100%");
     }
 
-    private void ReturnInvalidMatchingPercentage(int invalidValue)
-    {
-        _jobAnalysingMock.Setup(mock => mock.CalculateMatchingPercentageBetweenJobPostAndJobSeeker(
-            It.IsAny<JobPosting>(), It.IsAny<JobSeekerProfile>()))
-            .Returns(invalidValue);
-    }
-
     private void JobPostMatchWithJobExpectation()
     {
-        _jobAnalysingMock.Setup(mock => mock.IsJobPostingMatchWithJobSeekerExpectation(
-            It.IsAny<JobPosting>(), It.IsAny<UserJobFilter>()))
+        _jobAnalysingMock.Setup(mock => mock.IsJobSeekerExpectationMatch(It.IsAny<JobSeekerExpectation>()))
             .Returns(true);
     }
 
@@ -131,11 +127,10 @@ public class JobPostAnalysisTest
             .ReturnsAsync(_fixture.CreateMany<JobFilter>().ToList());
     }
 
-    private void SetUserBeSuitableForJobPost()
+    private void ComputeJobSeekerCompatibility(int compatibleValue)
     {
-        _jobAnalysingMock.Setup(mock => mock.CalculateMatchingPercentageBetweenJobPostAndJobSeeker(
-            It.IsAny<JobPosting>(), It.IsAny<JobSeekerProfile>()))
-            .Returns(SATISFIED_THRESHOLD);
+        _jobAnalysingMock.Setup(mock => mock.ComputeJobSeekerCompatibility(It.IsAny<JobSeekerAggregate>()))
+            .Returns(compatibleValue);
     }
 
     private void GetProjectsContainingEmptyTitleAndDescription()
