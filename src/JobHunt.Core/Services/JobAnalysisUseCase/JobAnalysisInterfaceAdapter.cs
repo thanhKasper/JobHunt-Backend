@@ -54,6 +54,7 @@ public class JobAnalysisInterfaceAdapter(
         JobPosting formattedJobPosting = _jobPostFormatter.FormatJobPosting(rawJobPosting);
         List<JobFilter> jobFilters = _jobExpectationRepo.GetAllJobFiltersAsync().Result;
 
+
         foreach (var jobfilter in jobFilters)
         {
             AnalyzeJobPostForEachJobFilter(formattedJobPosting, jobfilter);
@@ -62,13 +63,15 @@ public class JobAnalysisInterfaceAdapter(
 
     private void AnalyzeJobPostForEachJobFilter(JobPosting formattedJobPosting, JobFilter jobfilter)
     {
-        JobSeekerProfile jobseeker = ToJobSeekerProfile(jobfilter.JobFilterOwner);
-        UserJobFilter userJobExpectation = ToUserJobFilter(jobfilter);
+        _jobPostAnalyzer.SetJobPosting(formattedJobPosting);
 
-        if (_jobPostAnalyzer.IsJobPostingMatchWithJobSeekerExpectation(formattedJobPosting, userJobExpectation))
+        JobSeekerAggregate jobseeker = JobSeekerAggregate.ToJobSeekerAggregate(jobfilter.JobFilterOwner);
+        JobSeekerExpectation userJobExpectation = JobSeekerExpectation.ToJobSeekerExpectation(jobfilter);
+
+        if (_jobPostAnalyzer.IsJobSeekerExpectationMatch(userJobExpectation))
         {
             int matchingPercentage = _jobPostAnalyzer
-                .CalculateMatchingPercentageBetweenJobPostAndJobSeeker(formattedJobPosting, jobseeker);
+                .ComputeJobSeekerCompatibility(jobseeker);
 
             ValidateMatchingPercentage(matchingPercentage);
 
@@ -94,59 +97,9 @@ public class JobAnalysisInterfaceAdapter(
         }
     }
 
-    private JobSeekerProfile ToJobSeekerProfile(JobHunter jobSeeker)
-    {
-        return new JobSeekerProfile()
-        {
-            Awards = jobSeeker.Achievements.Select(a => a.Achievement!).ToList(),
-            Education = jobSeeker.Education.EducationId.ToString(),
-            StudyMajor = jobSeeker.Major.MajorId.ToString(),
-            SelfProjects = ToSelfProjectList(jobSeeker.Projects ?? [])
-        };
-    }
-
-    private UserJobFilter ToUserJobFilter(JobFilter jobFilter)
-    {
-        return new UserJobFilter()
-        {
-            YearsOfExperience = jobFilter.YearsOfExperience,
-            WorkingLocation = jobFilter.Location,
-            TechnicalKnowledge = jobFilter.SpecializedKnowledges.Select(knowledge => knowledge.Knowledge!).ToList(),
-            Tools = jobFilter.Tools.Select(tool => tool.ToolName!).ToList(),
-            SoftSkills = jobFilter.SoftSkills.Select(skill => skill.SoftSkillName!).ToList(),
-            Technologies = jobFilter.Technologies.Select(tech => tech.TechnologyName!).ToList(),
-            Languages = jobFilter.Languages.Select(lang => lang.CommunicationLanguage + " - " + lang.Certification).ToList(),
-        };
-    }
-
     private static bool SatisfyPercentageThreshold(int matchingPercentage)
     {
         return matchingPercentage >= MATCHING_PERCENTAGE_THRESHOLD;
     }
-
-    private List<SelfProject> ToSelfProjectList(List<Project> projects)
-    {
-        return projects.Select(ToSelfProject).ToList();
-    }
-
-    private SelfProject ToSelfProject(Project project)
-    {
-        if (string.IsNullOrEmpty(project.ProjectTitle) && 
-            string.IsNullOrEmpty(project.Description))
-        {
-            throw new ArgumentException("Project title and description cannot be empty");
-        }
-
-        return new SelfProject()
-        {
-            Title = project.ProjectTitle ?? "",
-            Description = project.Description ?? "",
-            Features = project.Features.Select(feat => feat.Feature!).ToList(),
-            Roles = project.Roles.Select(role => role.ProjectOwnerRole!).ToList(),
-            TechStack = project.Technologies.Select(tech => tech.TechnologyName!).ToList(),
-            Tools = project.Tools.Select(tool => tool.ToolName!).ToList(),
-        };
-    }
-
-    
+ 
 }
