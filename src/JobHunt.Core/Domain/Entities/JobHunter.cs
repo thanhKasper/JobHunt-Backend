@@ -28,6 +28,7 @@ public class JobHunter : IdentityUser<Guid>
     public Major Major { get; set; } = null!;
     public Education Education { get; set; } = null!;
     public List<Project> Projects { get; set; } = [];
+    public List<WorkingExperience> WorkingExperiences { get; set; } = [];
     public List<JobFilter> JobFilters { get; set; } = [];
     public List<PersonalAchievement> Achievements { get; set; } = [];
 
