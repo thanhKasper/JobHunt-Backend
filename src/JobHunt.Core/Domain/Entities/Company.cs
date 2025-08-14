@@ -19,4 +19,24 @@ public class Company
     [MaxLength(256)]
     public string? CompanyWebSite { get; set; }
     public List<Job> PostedJobs { get; } = [];
+
+
+    #region Business Core Logic
+    public bool IsSameCompany(Company other)
+    {
+        return CompanyName == other.CompanyName &&
+               CompanyAddress == other.CompanyAddress &&
+               CompanyWebSite == other.CompanyWebSite;
+    }
+
+    public bool IsUnknownCompany()
+    {
+        return CompanyId == Guid.Empty;
+    }
+
+    public static Company CreateUnknownCompany()
+    {
+        return new Company() { CompanyId = Guid.Empty };
+    }
+    #endregion
 }
