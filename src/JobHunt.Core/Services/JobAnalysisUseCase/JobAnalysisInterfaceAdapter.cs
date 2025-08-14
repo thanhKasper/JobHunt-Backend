@@ -1,12 +1,9 @@
 using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
-using JobHunt.Core.Domain.ValueObjects;
 using JobHunt.Core.ServiceContracts.JobAnalysisServiceContract;
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingAnalyzer.DTO;
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingAnalyzer.Interfaces;
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingNormalizer.Interface;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.Logging;
 
 namespace JobHunt.Core.Services.JobAnalysisUseCase;
