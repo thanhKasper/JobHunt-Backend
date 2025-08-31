@@ -4,13 +4,14 @@ using JobHunt.Core.ServiceContracts.JobAnalysisServiceContract;
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingAnalyzer.DTO;
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingAnalyzer.Interfaces;
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingNormalizer.Interface;
+using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingParser.Interface;
 using Microsoft.Extensions.Logging;
 
 namespace JobHunt.Core.Services.JobAnalysisUseCase;
 
 public class JobAnalysisInterfaceAdapter(
     IJobFilterReadRepository jobExpectationRepository,
-    IJobPostingFormatter jobPostFormatter,
+    IFormatter jobPostFormatter,
     IJobPostingAnalyzer jobPostAnalyzer,
     IJobPostNormalizer jobPostNormalizer,
     IJobUpdateRepository _jobUpdateRepository,
@@ -20,7 +21,7 @@ public class JobAnalysisInterfaceAdapter(
     private static readonly int MATCHING_PERCENTAGE_THRESHOLD = 70;
 
     private readonly IJobFilterReadRepository _jobExpectationRepo = jobExpectationRepository;
-    private readonly IJobPostingFormatter _jobPostFormatter = jobPostFormatter;
+    private readonly IFormatter _jobPostFormatter = jobPostFormatter;
     private readonly IJobPostingAnalyzer _jobPostAnalyzer = jobPostAnalyzer;
     private readonly IJobPostNormalizer _jobPostNormalizer = jobPostNormalizer;
     private readonly IJobUpdateRepository _jobUpdateRepository = _jobUpdateRepository;

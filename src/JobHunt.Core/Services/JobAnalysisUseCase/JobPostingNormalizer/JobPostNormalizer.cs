@@ -1,7 +1,7 @@
 ﻿using JobHunt.Core.Domain.Entities;
 using JobHunt.Core.Domain.RepositoryContracts;
-using JobHunt.Core.Services.JobAnalysisUseCase.CompanySynchronizer;
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingAnalyzer.DTO;
+using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingNormalizer.CompanySynchronizer;
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingNormalizer.Interface;
 using Microsoft.Extensions.FileProviders;
 using System.Diagnostics;

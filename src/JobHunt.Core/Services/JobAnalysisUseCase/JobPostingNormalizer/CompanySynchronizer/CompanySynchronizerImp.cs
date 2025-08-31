@@ -2,7 +2,7 @@
 using JobHunt.Core.Domain.RepositoryContracts;
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingAnalyzer.DTO;
 
-namespace JobHunt.Core.Services.JobAnalysisUseCase.CompanySynchronizer
+namespace JobHunt.Core.Services.JobAnalysisUseCase.JobPostingNormalizer.CompanySynchronizer
 {
     public class CompanySynchronizerImp(
         ICompanyGetRepository _companyGetRepository,

@@ -1,8 +1,8 @@
 using JobHunt.Core.Services.JobAnalysisUseCase.JobPostingAnalyzer.DTO;
 
-namespace JobHunt.Core.ServiceContracts.JobAnalysisServiceContract;
+namespace JobHunt.Core.Services.JobAnalysisUseCase.JobPostFormatting.Interface;
 
-public interface IJobPostingFormatter
+public interface IFormatter
 {
     JobPosting FormatJobPosting(string job); 
 }
