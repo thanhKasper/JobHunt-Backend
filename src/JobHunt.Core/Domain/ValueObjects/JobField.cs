@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using JobHunt.Core.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
 namespace JobHunt.Core.Domain.ValueObjects;
 
